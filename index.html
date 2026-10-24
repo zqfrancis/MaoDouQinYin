@@ -93,33 +93,33 @@
   </div>
 
   <div class="warn">
-    <b data-i18n="honest_title">v0.1 诚实说明：</b><span data-i18n="honest"> 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。音符之间有 1.5 秒宽限，避免频繁启停。麦克风检测只能在真机上测试，无头测试无法验证。</span>
+    <b data-i18n="honest_title">v0.1 诚实说明：</b><span data-i18n="honest"> 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。停下后有 15 秒宽限（看谱、摸音都算），15 秒内再弹就接着计，超过 15 秒没声才暂停。麦克风检测只能在真机上测试，无头测试无法验证。</span>
   </div>
 
-  <footer>毛豆琴音 v0.1.1 · <span data-i18n="foot">记录只存在这台设备上（localStorage）</span></footer>
+  <footer>毛豆琴音 v0.1.2 · <span data-i18n="foot">记录只存在这台设备上（localStorage）</span></footer>
 </div>
 
 <script>
 const I18N = {
   zh: {
     title:'毛豆琴音', subtitle:'只给真正的弹琴计时 · Piano time only', who:'今天谁练琴？', brother:'哥哥', sister:'妹妹',
-    st_idle:'未开始', st_playing:'弹琴中 ✓', st_grace:'音符间隙，继续计时', st_nosound:'没听到琴声，暂停中', st_noise:'噪音，不计入', st_manual:'已暂停', st_micdenied:'麦克风未授权',
+    st_idle:'未开始', st_playing:'弹琴中 ✓', st_grace:'看谱间隙，继续计时', st_nosound:'没听到琴声，暂停中', st_noise:'噪音，不计入', st_manual:'已暂停', st_micdenied:'麦克风未授权',
     mic_off:'麦克风：未开启', mic_on:'麦克风：已开启', start:'▶ 开始练琴', pause:'⏸ 暂停', resume:'▶ 继续', end:'■ 结束',
     tip:'把手机放在琴边，点开始后只有听到正常弹琴声才计时。乱弹、说话、走开都不计。',
     sensitivity:'灵敏度', sens_tip:'调高更容易计入轻声弹琴，但也更容易把说话误计入；调低则相反。',
     history:'记录', clear:'清除记录', honest_title:'v0.1 诚实说明：',
-    honest:' 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。音符之间有 1.5 秒宽限，避免频繁启停。麦克风检测只能在真机上测试，无头测试无法验证。',
+    honest:' 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。停下后有 15 秒宽限（看谱、摸音都算），15 秒内再弹就接着计，超过 15 秒没声才暂停。麦克风检测只能在真机上测试，无头测试无法验证。',
     foot:'记录只存在这台设备上（localStorage）', today:'今日累计', nohist:'暂无记录', cleared:'记录已清除', need_mic:'需要麦克风权限才能开始。请在浏览器里允许麦克风。',
     sens_low:'低', sens_mid:'中', sens_high:'高', saved:'已保存本次练琴', hz:'Hz', note_none:'—'
   },
   en: {
     title:'MaoDou Piano', subtitle:'Piano time only · 只给真正的弹琴计时', who:'Who is practicing today?', brother:'Brother', sister:'Sister',
-    st_idle:'Not started', st_playing:'Playing ✓', st_grace:'Between notes, still counting', st_nosound:'No piano sound, paused', st_noise:'Noise, not counted', st_manual:'Paused', st_micdenied:'Mic not allowed',
+    st_idle:'Not started', st_playing:'Playing ✓', st_grace:'Reading score, still counting', st_nosound:'No piano sound, paused', st_noise:'Noise, not counted', st_manual:'Paused', st_micdenied:'Mic not allowed',
     mic_off:'Mic: off', mic_on:'Mic: on', start:'▶ Start practice', pause:'⏸ Pause', resume:'▶ Resume', end:'■ Finish',
     tip:'Put the phone by the piano. After you press Start, only real piano playing counts. Random banging, talking, or walking away does not count.',
     sensitivity:'Sensitivity', sens_tip:'Higher catches soft playing more easily, but may also count loud talking nearby. Lower is stricter.',
     history:'History', clear:'Clear history', honest_title:'v0.1 honest note:',
-    honest:' This is heuristic detection (volume + autocorrelation pitch + spectral flatness), not XiaoYezi-level AI recognition. Fast runs or very soft playing may be undercounted; loud talking very close to the mic may be miscounted. There is a 1.5s grace between notes to avoid stop-start flicker. Mic detection can only be tested on a real device, not headlessly.',
+    honest:' This is heuristic detection (volume + autocorrelation pitch + spectral flatness), not XiaoYezi-level AI recognition. Fast runs or very soft playing may be undercounted; loud talking very close to the mic may be miscounted. There is a 15s grace after playing stops (reading the score or feeling out notes still counts); only after 15s with no sound does it pause. Mic detection can only be tested on a real device, not headlessly.',
     foot:'Records stay on this device only (localStorage)', today:"Today's total", nohist:'No records yet', cleared:'History cleared', need_mic:'Microphone permission is needed to start. Please allow the mic in the browser.',
     sens_low:'Low', sens_mid:'Medium', sens_high:'High', saved:'Practice saved', hz:'Hz', note_none:'—'
   }
@@ -143,7 +143,7 @@ let running = false, manualPaused = false;
 let effectiveMs = 0, sessionStart = null, lastTick = null, lastValid = 0;
 let audioCtx = null, analyser = null, micStream = null, wakeLock = null;
 let timeBuf = null, freqBuf = null;
-const GRACE_MS = 1500;
+const GRACE_MS = 15000;
 
 // ---- Google Sheet auto-sync (DRAFT, NOT LIVE: fill after Apps Script deployment, then push) ----
 // SYNC_ENDPOINT = Apps Script Web App URL ending in /exec; empty = local-only, no sync attempt.
