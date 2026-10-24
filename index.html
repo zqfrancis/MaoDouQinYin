@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>毛豆琴音 · Piano Practice Timer</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Arial,sans-serif;background:#fff8ee;color:#2b2118}
+  .wrap{max-width:540px;margin:0 auto;padding:18px 16px 40px}
+  header{display:flex;justify-content:space-between;align-items:center}
+  h1{font-size:26px;margin:6px 0 2px}
+  .sub{color:#8a6d4d;font-size:14px;margin:0 0 14px}
+  .langbtn{border:1px solid #e0c9a8;background:#fff;border-radius:20px;padding:7px 12px;font-size:14px;cursor:pointer}
+  .card{background:#fff;border:1px solid #f0dfc2;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(120,80,20,.06)}
+  .label{font-size:13px;color:#8a6d4d;margin-bottom:8px}
+  .kids{display:flex;gap:10px}
+  .kid{flex:1;border:2px solid #eee0c8;background:#fffdf8;border-radius:14px;padding:12px;font-size:17px;cursor:pointer}
+  .kid small{display:block;font-size:12px;color:#8a6d4d;margin-top:2px}
+  .kid.active{border-color:#e67e22;background:#fff3e6}
+  .timer{text-align:center;padding:6px 0 2px}
+  #time{font-size:64px;font-weight:800;letter-spacing:1px;font-variant-numeric:tabular-nums;line-height:1.1}
+  #status{display:inline-block;margin:8px 0 4px;padding:7px 14px;border-radius:20px;font-size:15px;font-weight:600;background:#eee;color:#555}
+  #status.playing{background:#d9f2dd;color:#1e6b2e}
+  #status.grace{background:#fff0c2;color:#7a5a00}
+  #status.noise{background:#ffe0d6;color:#8a2b12}
+  #status.nosound{background:#eee;color:#555}
+  .note{font-size:20px;font-weight:700;min-height:28px}
+  .note small{font-size:13px;color:#8a6d4d;font-weight:400}
+  .meter{height:10px;background:#f0e6d2;border-radius:10px;overflow:hidden;margin:10px 0 4px}
+  #level{height:100%;width:0%;background:#e67e22;transition:width .12s}
+  .meta{display:flex;justify-content:space-between;font-size:13px;color:#8a6d4d}
+  .btns{display:flex;gap:10px;margin-top:12px}
+  button.big{flex:1;border:0;border-radius:14px;padding:14px;font-size:17px;font-weight:700;cursor:pointer}
+  #startBtn{background:#e67e22;color:#fff}
+  #pauseBtn{background:#f0e6d2;color:#2b2118}
+  #endBtn{background:#2b2118;color:#fff}
+  button.big:disabled{opacity:.45;cursor:default}
+  input[type=range]{width:100%}
+  .row{display:flex;justify-content:space-between;font-size:14px}
+  .hist{font-size:14px;line-height:1.7}
+  .hist div{border-bottom:1px dashed #eee;padding:3px 0}
+  .warn{font-size:13px;line-height:1.65;color:#6b5238;background:#fff8ee;border:1px dashed #e0c9a8;border-radius:12px;padding:10px 12px}
+  .warn b{color:#8a2b12}
+  footer{text-align:center;color:#a98f6d;font-size:12px;margin-top:16px}
+  .smallbtn{border:1px solid #e0c9a8;background:#fff;border-radius:10px;padding:6px 10px;font-size:13px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>🎹 <span data-i18n="title">毛豆琴音</span></h1>
+      <p class="sub" data-i18n="subtitle">只给真正的弹琴计时 · Piano time only</p>
+    </div>
+    <button class="langbtn" id="langBtn">EN</button>
+  </header>
+
+  <div class="card">
+    <div class="label" data-i18n="who">今天谁练琴？</div>
+    <div class="kids">
+      <button class="kid active" id="kidAaron">Aaron<small data-i18n="brother">哥哥</small></button>
+      <button class="kid" id="kidAbigail">Abigail<small data-i18n="sister">妹妹</small></button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="timer">
+      <div id="time">00:00</div>
+      <div><span id="status" class="nosound" data-i18n="st_idle">未开始</span></div>
+      <div class="note"><span id="noteName">—</span> <small id="noteFreq"></small></div>
+    </div>
+    <div class="meter"><div id="level"></div></div>
+    <div class="meta"><span id="micState" data-i18n="mic_off">麦克风：未开启</span><span id="todayTotal"></span></div>
+    <div class="btns">
+      <button class="big" id="startBtn" data-i18n="start">▶ 开始练琴</button>
+      <button class="big" id="pauseBtn" disabled data-i18n="pause">⏸ 暂停</button>
+      <button class="big" id="endBtn" disabled data-i18n="end">■ 结束</button>
+    </div>
+    <p style="font-size:13px;color:#8a6d4d;line-height:1.6" data-i18n="tip">把手机放在琴边，点开始后只有听到正常弹琴声才计时。乱弹、说话、走开都不计。</p>
+  </div>
+
+  <div class="card">
+    <div class="row"><span data-i18n="sensitivity">灵敏度</span><span id="sensLabel">中</span></div>
+    <input type="range" id="sens" min="20" max="100" value="55">
+    <p style="font-size:13px;color:#8a6d4d;margin:6px 0 0" data-i18n="sens_tip">调高更容易计入轻声弹琴，但也更容易把说话误计入；调低则相反。</p>
+  </div>
+
+  <div class="card">
+    <div class="row"><span data-i18n="history">记录</span><button class="smallbtn" id="clearBtn" data-i18n="clear">清除记录</button></div>
+    <div class="hist" id="history"></div>
+  </div>
+
+  <div class="warn">
+    <b data-i18n="honest_title">v0.1 诚实说明：</b><span data-i18n="honest"> 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。音符之间有 1.5 秒宽限，避免频繁启停。麦克风检测只能在真机上测试，无头测试无法验证。</span>
+  </div>
+
+  <footer>毛豆琴音 v0.1 · <span data-i18n="foot">记录只存在这台设备上（localStorage）</span></footer>
+</div>
+
+<script>
+const I18N = {
+  zh: {
+    title:'毛豆琴音', subtitle:'只给真正的弹琴计时 · Piano time only', who:'今天谁练琴？', brother:'哥哥', sister:'妹妹',
+    st_idle:'未开始', st_playing:'弹琴中 ✓', st_grace:'音符间隙，继续计时', st_nosound:'没听到琴声，暂停中', st_noise:'噪音，不计入', st_manual:'已暂停', st_micdenied:'麦克风未授权',
+    mic_off:'麦克风：未开启', mic_on:'麦克风：已开启', start:'▶ 开始练琴', pause:'⏸ 暂停', resume:'▶ 继续', end:'■ 结束',
+    tip:'把手机放在琴边，点开始后只有听到正常弹琴声才计时。乱弹、说话、走开都不计。',
+    sensitivity:'灵敏度', sens_tip:'调高更容易计入轻声弹琴，但也更容易把说话误计入；调低则相反。',
+    history:'记录', clear:'清除记录', honest_title:'v0.1 诚实说明：',
+    honest:' 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。音符之间有 1.5 秒宽限，避免频繁启停。麦克风检测只能在真机上测试，无头测试无法验证。',
+    foot:'记录只存在这台设备上（localStorage）', today:'今日累计', nohist:'暂无记录', cleared:'记录已清除', need_mic:'需要麦克风权限才能开始。请在浏览器里允许麦克风。',
+    sens_low:'低', sens_mid:'中', sens_high:'高', saved:'已保存本次练琴', hz:'Hz', note_none:'—'
+  },
+  en: {
+    title:'MaoDou Piano', subtitle:'Piano time only · 只给真正的弹琴计时', who:'Who is practicing today?', brother:'Brother', sister:'Sister',
+    st_idle:'Not started', st_playing:'Playing ✓', st_grace:'Between notes, still counting', st_nosound:'No piano sound, paused', st_noise:'Noise, not counted', st_manual:'Paused', st_micdenied:'Mic not allowed',
+    mic_off:'Mic: off', mic_on:'Mic: on', start:'▶ Start practice', pause:'⏸ Pause', resume:'▶ Resume', end:'■ Finish',
+    tip:'Put the phone by the piano. After you press Start, only real piano playing counts. Random banging, talking, or walking away does not count.',
+    sensitivity:'Sensitivity', sens_tip:'Higher catches soft playing more easily, but may also count loud talking nearby. Lower is stricter.',
+    history:'History', clear:'Clear history', honest_title:'v0.1 honest note:',
+    honest:' This is heuristic detection (volume + autocorrelation pitch + spectral flatness), not XiaoYezi-level AI recognition. Fast runs or very soft playing may be undercounted; loud talking very close to the mic may be miscounted. There is a 1.5s grace between notes to avoid stop-start flicker. Mic detection can only be tested on a real device, not headlessly.',
+    foot:'Records stay on this device only (localStorage)', today:"Today's total", nohist:'No records yet', cleared:'History cleared', need_mic:'Microphone permission is needed to start. Please allow the mic in the browser.',
+    sens_low:'Low', sens_mid:'Medium', sens_high:'High', saved:'Practice saved', hz:'Hz', note_none:'—'
+  }
+};
+let lang = localStorage.getItem('mdqy_lang') || 'zh';
+function t(k){ return (I18N[lang] && I18N[lang][k]) || I18N.zh[k] || k; }
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
+  document.getElementById('langBtn').textContent = lang === 'zh' ? 'EN' : '中文';
+  renderHistory(); updateSensLabel(); updateToday();
+}
+document.getElementById('langBtn').onclick = ()=>{
+  lang = lang === 'zh' ? 'en' : 'zh';
+  localStorage.setItem('mdqy_lang', lang);
+  applyLang();
+};
+
+// ---- state ----
+let child = 'Aaron';
+let running = false, manualPaused = false;
+let effectiveMs = 0, sessionStart = null, lastTick = null, lastValid = 0;
+let audioCtx = null, analyser = null, micStream = null, wakeLock = null;
+let timeBuf = null, freqBuf = null;
+const GRACE_MS = 1500;
+
+const kidAaron = document.getElementById('kidAaron');
+const kidAbigail = document.getElementById('kidAbigail');
+function selectKid(name){
+  child = name;
+  kidAaron.classList.toggle('active', name==='Aaron');
+  kidAbigail.classList.toggle('active', name==='Abigail');
+  updateToday(); renderHistory();
+}
+kidAaron.onclick = ()=>selectKid('Aaron');
+kidAbigail.onclick = ()=>selectKid('Abigail');
+
+function fmt(ms){
+  const s = Math.floor(ms/1000);
+  const m = Math.floor(s/60), sec = s%60;
+  return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+}
+function fmtDur(sec){
+  const m = Math.floor(sec/60), s = sec%60;
+  return m>0 ? (m + 'm ' + String(s).padStart(2,'0') + 's') : (s + 's');
+}
+function setStatus(key, cls){
+  const el = document.getElementById('status');
+  el.textContent = t(key);
+  el.className = cls || '';
+}
+function updateSensLabel(){
+  const v = +document.getElementById('sens').value;
+  document.getElementById('sensLabel').textContent = v<40 ? t('sens_low') : (v<=70 ? t('sens_mid') : t('sens_high'));
+}
+document.getElementById('sens').oninput = updateSensLabel;
+
+// ---- history (localStorage) ----
+const KEY = 'maodouqinyin_history_v1';
+function loadHist(){
+  try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e){ return []; }
+}
+function saveHist(h){ localStorage.setItem(KEY, JSON.stringify(h)); }
+function todayStr(d){
+  d = d || new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function updateToday(){
+  const today = todayStr();
+  const total = loadHist().filter(x=>x.child===child && x.date===today).reduce((a,x)=>a+x.seconds,0);
+  document.getElementById('todayTotal').textContent = t('today') + ': ' + fmt(total*1000);
+}
+function renderHistory(){
+  const h = loadHist().slice().reverse().slice(0,20);
+  const el = document.getElementById('history');
+  if(!h.length){ el.textContent = t('nohist'); return; }
+  el.innerHTML = '';
+  h.forEach(x=>{
+    const d = document.createElement('div');
+    d.textContent = x.date + ' · ' + x.child + ' · ' + fmtDur(x.seconds);
+    el.appendChild(d);
+  });
+}
+document.getElementById('clearBtn').onclick = ()=>{
+  if(confirm(lang==='zh' ? '确定清除全部记录吗？' : 'Clear all history?')){
+    localStorage.removeItem(KEY); renderHistory(); updateToday(); alert(t('cleared'));
+  }
+};
+
+// ---- pitch detection (autocorrelation) ----
+const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+function freqToNote(f){
+  const midi = Math.round(69 + 12*Math.log2(f/440));
+  const name = NOTE_NAMES[((midi%12)+12)%12];
+  const oct = Math.floor(midi/12)-1;
+  return name + oct;
+}
+function detectPitch(buf, sampleRate){
+  // RMS
+  let sum = 0;
+  for(let i=0;i<buf.length;i++) sum += buf[i]*buf[i];
+  const rms = Math.sqrt(sum/buf.length);
+  if(rms < 0.005) return {rms, freq:0, clarity:0};
+  // autocorrelation, piano range 65Hz ~ 1100Hz
+  const minLag = Math.floor(sampleRate/1100);
+  const maxLag = Math.floor(sampleRate/65);
+  let corr0 = sum;
+  let bestLag = -1, bestCorr = -Infinity;
+  for(let lag=minLag; lag<=maxLag; lag++){
+    let c = 0;
+    for(let i=0;i<buf.length-lag;i++) c += buf[i]*buf[i+lag];
+    if(c > bestCorr){ bestCorr = c; bestLag = lag; }
+  }
+  if(bestLag < 0) return {rms, freq:0, clarity:0};
+  const clarity = bestCorr / corr0;
+  const freq = sampleRate / bestLag;
+  return {rms, freq, clarity};
+}
+function spectralFlatness(freqData){
+  // freqData: Uint8Array 0..255
+  let geo = 0, arith = 0, n = freqData.length;
+  for(let i=0;i<n;i++){
+    const v = freqData[i]+1;
+    geo += Math.log(v); arith += v;
+  }
+  geo = Math.exp(geo/n); arith = arith/n;
+  return arith>0 ? geo/arith : 1;
+}
+
+// ---- main loop ----
+function tick(){
+  const now = Date.now();
+  const delta = lastTick ? Math.min(now-lastTick, 500) : 0;
+  lastTick = now;
+  if(!running || manualPaused) return;
+
+  if(!analyser){
+    setStatus('st_nosound','nosound');
+    return;
+  }
+  analyser.getFloatTimeDomainData(timeBuf);
+  analyser.getByteFrequencyData(freqBuf);
+  const sens = +document.getElementById('sens').value;
+  const rmsThresh = 0.09 - (sens/100)*0.07;
+  const flatThresh = 0.35 + (sens/100)*0.35;
+  const clarityThresh = 0.45 - (sens/100)*0.20;
+
+  const det = detectPitch(timeBuf, audioCtx.sampleRate);
+  const flat = spectralFlatness(freqBuf);
+  const levelEl = document.getElementById('level');
+  levelEl.style.width = Math.min(100, Math.round(det.rms*600)) + '%';
+
+  const isValid = det.rms >= rmsThresh && det.freq>0 && det.clarity >= clarityThresh && flat <= flatThresh;
+
+  if(isValid){
+    lastValid = now;
+    effectiveMs += delta;
+    setStatus('st_playing','playing');
+    document.getElementById('noteName').textContent = freqToNote(det.freq);
+    document.getElementById('noteFreq').textContent = Math.round(det.freq) + ' ' + t('hz');
+  } else if(now - lastValid < GRACE_MS && lastValid>0){
+    effectiveMs += delta;
+    setStatus('st_grace','grace');
+  } else if(det.rms >= rmsThresh){
+    // loud, but no stable piano pitch / too noise-like
+    setStatus('st_noise','noise');
+    document.getElementById('noteName').textContent = t('note_none');
+    document.getElementById('noteFreq').textContent = '';
+  } else {
+    setStatus('st_nosound','nosound');
+    document.getElementById('noteName').textContent = t('note_none');
+    document.getElementById('noteFreq').textContent = '';
+  }
+  document.getElementById('time').textContent = fmt(effectiveMs);
+}
+
+async function startPractice(){
+  if(running && manualPaused){
+    manualPaused = false;
+    document.getElementById('pauseBtn').textContent = t('pause');
+    setStatus('st_nosound','nosound');
+    lastTick = Date.now();
+    return;
+  }
+  try{
+    micStream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:false, autoGainControl:false}});
+  }catch(e){
+    alert(t('need_mic'));
+    setStatus('st_micdenied','noise');
+    return;
+  }
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  await audioCtx.resume();
+  const src = audioCtx.createMediaStreamSource(micStream);
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  src.connect(analyser);
+  timeBuf = new Float32Array(analyser.fftSize);
+  freqBuf = new Uint8Array(analyser.frequencyBinCount);
+
+  running = true; manualPaused = false;
+  effectiveMs = 0; sessionStart = new Date(); lastValid = 0; lastTick = Date.now();
+  document.getElementById('time').textContent = '00:00';
+  document.getElementById('micState').textContent = t('mic_on');
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('pauseBtn').disabled = false;
+  document.getElementById('pauseBtn').textContent = t('pause');
+  document.getElementById('endBtn').disabled = false;
+  kidAaron.disabled = true; kidAbigail.disabled = true;
+  try{ if(navigator.wakeLock) wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
+  setStatus('st_nosound','nosound');
+}
+
+function pausePractice(){
+  if(!running) return;
+  manualPaused = !manualPaused;
+  document.getElementById('pauseBtn').textContent = manualPaused ? t('resume') : t('pause');
+  if(manualPaused) setStatus('st_manual','nosound');
+  else { lastTick = Date.now(); setStatus('st_nosound','nosound'); }
+}
+
+function endPractice(){
+  const seconds = Math.floor(effectiveMs/1000);
+  if(seconds > 0){
+    const h = loadHist();
+    h.push({child: child, date: todayStr(), seconds: seconds, start: sessionStart ? sessionStart.toISOString() : null, end: new Date().toISOString()});
+    saveHist(h);
+    alert(t('saved') + ': ' + fmtDur(seconds));
+  }
+  running = false; manualPaused = false;
+  if(micStream) micStream.getTracks().forEach(tr=>tr.stop());
+  if(audioCtx) audioCtx.close();
+  if(wakeLock) wakeLock.release().catch(()=>{});
+  analyser = null; audioCtx = null; micStream = null;
+  document.getElementById('micState').textContent = t('mic_off');
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('pauseBtn').disabled = true;
+  document.getElementById('endBtn').disabled = true;
+  kidAaron.disabled = false; kidAbigail.disabled = false;
+  document.getElementById('level').style.width = '0%';
+  setStatus('st_idle','nosound');
+  updateToday(); renderHistory();
+}
+
+document.getElementById('startBtn').onclick = startPractice;
+document.getElementById('pauseBtn').onclick = pausePractice;
+document.getElementById('endBtn').onclick = endPractice;
+setInterval(tick, 100);
+
+applyLang();
+</script>
+</body>
+</html>
