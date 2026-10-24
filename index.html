@@ -72,6 +72,7 @@
     </div>
     <div class="meter"><div id="level"></div></div>
     <div class="meta"><span id="micState" data-i18n="mic_off">麦克风：未开启</span><span id="todayTotal"></span></div>
+    <div id="debug" style="font-size:12px;color:#8a6d4d;margin-top:6px;word-break:break-all">调试：未开始</div>
     <div class="btns">
       <button class="big" id="startBtn" data-i18n="start">▶ 开始练琴</button>
       <button class="big" id="pauseBtn" disabled data-i18n="pause">⏸ 暂停</button>
@@ -82,7 +83,7 @@
 
   <div class="card">
     <div class="row"><span data-i18n="sensitivity">灵敏度</span><span id="sensLabel">中</span></div>
-    <input type="range" id="sens" min="20" max="100" value="55">
+    <input type="range" id="sens" min="20" max="100" value="80">
     <p style="font-size:13px;color:#8a6d4d;margin:6px 0 0" data-i18n="sens_tip">调高更容易计入轻声弹琴，但也更容易把说话误计入；调低则相反。</p>
   </div>
 
@@ -95,7 +96,7 @@
     <b data-i18n="honest_title">v0.1 诚实说明：</b><span data-i18n="honest"> 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。音符之间有 1.5 秒宽限，避免频繁启停。麦克风检测只能在真机上测试，无头测试无法验证。</span>
   </div>
 
-  <footer>毛豆琴音 v0.1 · <span data-i18n="foot">记录只存在这台设备上（localStorage）</span></footer>
+  <footer>毛豆琴音 v0.1.1 · <span data-i18n="foot">记录只存在这台设备上（localStorage）</span></footer>
 </div>
 
 <script>
@@ -143,6 +144,33 @@ let effectiveMs = 0, sessionStart = null, lastTick = null, lastValid = 0;
 let audioCtx = null, analyser = null, micStream = null, wakeLock = null;
 let timeBuf = null, freqBuf = null;
 const GRACE_MS = 1500;
+
+// ---- Google Sheet auto-sync (DRAFT, NOT LIVE: fill after Apps Script deployment, then push) ----
+// SYNC_ENDPOINT = Apps Script Web App URL ending in /exec; empty = local-only, no sync attempt.
+// SYNC_TOKEN = token from ~/workspace/maodouqinyin-sync/token.txt (filled at push time only).
+// Design: local record is always saved first; sync is an extra. Failures go to a pending
+// queue in localStorage and are retried on the next Start. Server dedupes by date+time+child+seconds.
+const SYNC_ENDPOINT = '';
+const SYNC_TOKEN = '';
+const PENDING_KEY = 'maodouqinyin_pending_v1';
+function loadPending(){ try { return JSON.parse(localStorage.getItem(PENDING_KEY) || '[]'); } catch(e){ return []; } }
+function savePending(q){ localStorage.setItem(PENDING_KEY, JSON.stringify(q)); }
+async function syncSession(rec){
+  if(!SYNC_ENDPOINT) return false;
+  try {
+    const res = await fetch(SYNC_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(rec) });
+    const data = await res.json();
+    return !!(data && data.ok);
+  } catch(e) { return false; }
+}
+async function flushPending(){
+  if(!SYNC_ENDPOINT) return;
+  const q = loadPending();
+  if(!q.length) return;
+  const remaining = [];
+  for(const rec of q){ if(!(await syncSession(rec))) remaining.push(rec); }
+  savePending(remaining);
+}
 
 const kidAaron = document.getElementById('kidAaron');
 const kidAbigail = document.getElementById('kidAbigail');
@@ -261,9 +289,11 @@ function tick(){
   analyser.getFloatTimeDomainData(timeBuf);
   analyser.getByteFrequencyData(freqBuf);
   const sens = +document.getElementById('sens').value;
-  const rmsThresh = 0.09 - (sens/100)*0.07;
-  const flatThresh = 0.35 + (sens/100)*0.35;
-  const clarityThresh = 0.45 - (sens/100)*0.20;
+  // v0.1.1: thresholds loosened after a real piano test failed to register.
+  // Default sensitivity is now 80. Lower RMS / clarity bars, higher flatness bar.
+  const rmsThresh = 0.055 - (sens/100)*0.045;
+  const flatThresh = 0.45 + (sens/100)*0.30;
+  const clarityThresh = 0.35 - (sens/100)*0.15;
 
   const det = detectPitch(timeBuf, audioCtx.sampleRate);
   const flat = spectralFlatness(freqBuf);
@@ -271,6 +301,8 @@ function tick(){
   levelEl.style.width = Math.min(100, Math.round(det.rms*600)) + '%';
 
   const isValid = det.rms >= rmsThresh && det.freq>0 && det.clarity >= clarityThresh && flat <= flatThresh;
+  const dbg = document.getElementById('debug');
+  if(dbg) dbg.textContent = '调试：音量 ' + det.rms.toFixed(3) + ' / 门限 ' + rmsThresh.toFixed(3) + ' · 音高 ' + (det.freq ? Math.round(det.freq) + 'Hz' : '—') + ' · 清晰度 ' + det.clarity.toFixed(2) + ' / ' + clarityThresh.toFixed(2) + ' · 平坦度 ' + flat.toFixed(2) + ' / ' + flatThresh.toFixed(2);
 
   if(isValid){
     lastValid = now;
@@ -305,9 +337,13 @@ async function startPractice(){
   try{
     micStream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false, noiseSuppression:false, autoGainControl:false}});
   }catch(e){
-    alert(t('need_mic'));
-    setStatus('st_micdenied','noise');
-    return;
+    // iOS / some browsers reject the strict constraints: retry with plain audio
+    try { micStream = await navigator.mediaDevices.getUserMedia({audio:true}); }
+    catch(e2){
+      alert(t('need_mic'));
+      setStatus('st_micdenied','noise');
+      return;
+    }
   }
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   await audioCtx.resume();
@@ -329,6 +365,7 @@ async function startPractice(){
   kidAaron.disabled = true; kidAbigail.disabled = true;
   try{ if(navigator.wakeLock) wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
   setStatus('st_nosound','nosound');
+  flushPending();
 }
 
 function pausePractice(){
@@ -345,6 +382,12 @@ function endPractice(){
     const h = loadHist();
     h.push({child: child, date: todayStr(), seconds: seconds, start: sessionStart ? sessionStart.toISOString() : null, end: new Date().toISOString()});
     saveHist(h);
+    if(SYNC_ENDPOINT && sessionStart){
+      const rec = { token: SYNC_TOKEN, child: child, date: todayStr(sessionStart),
+        time: sessionStart.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }),
+        duration: fmt(seconds*1000), seconds: seconds, start: sessionStart.toISOString() };
+      syncSession(rec).then(ok => { if(!ok){ const q = loadPending(); q.push(rec); savePending(q); } }).catch(() => { const q = loadPending(); q.push(rec); savePending(q); });
+    }
     alert(t('saved') + ': ' + fmtDur(seconds));
   }
   running = false; manualPaused = false;
