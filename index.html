@@ -88,7 +88,8 @@
   </div>
 
   <div class="card">
-    <div class="row"><span data-i18n="history">记录</span><button class="smallbtn" id="clearBtn" data-i18n="clear">清除记录</button></div>
+    <div class="row"><span data-i18n="history">记录</span><span style="display:flex;gap:6px"><button class="smallbtn" id="exportBtn" data-i18n="export">导出备份</button><button class="smallbtn" id="importBtn" data-i18n="import">导入备份</button><button class="smallbtn" id="clearBtn" data-i18n="clear">清除记录</button></span></div>
+    <input type="file" id="importFile" accept=".json,application/json" style="display:none">
     <div class="hist" id="history"></div>
   </div>
 
@@ -96,7 +97,7 @@
     <b data-i18n="honest_title">v0.1 诚实说明：</b><span data-i18n="honest"> 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。停下后有 15 秒宽限（看谱、摸音都算），15 秒内再弹就接着计，超过 15 秒没声才暂停。麦克风检测只能在真机上测试，无头测试无法验证。</span>
   </div>
 
-  <footer>毛豆琴音 v0.1.3 · <span data-i18n="foot">记录只存在这台设备上（localStorage）</span></footer>
+  <footer>毛豆琴音 v0.1.4 · <span data-i18n="foot">记录只存在这台设备上（localStorage）</span></footer>
 </div>
 
 <script>
@@ -107,7 +108,7 @@ const I18N = {
     mic_off:'麦克风：未开启', mic_on:'麦克风：已开启', start:'▶ 开始练琴', pause:'⏸ 暂停', resume:'▶ 继续', end:'■ 结束',
     tip:'把手机放在琴边，点开始后只有听到正常弹琴声才计时。乱弹、说话、走开都不计。',
     sensitivity:'灵敏度', sens_tip:'调高更容易计入轻声弹琴，但也更容易把说话误计入；调低则相反。',
-    history:'记录', clear:'清除记录', honest_title:'v0.1 诚实说明：',
+    history:'记录', clear:'清除记录', export:'导出备份', import:'导入备份', honest_title:'v0.1 诚实说明：', nohist:'暂无记录', cleared:'记录已清除', need_mic:'需要麦克风权限才能开始。请在浏览器里允许麦克风。',
     honest:' 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。停下后有 15 秒宽限（看谱、摸音都算），15 秒内再弹就接着计，超过 15 秒没声才暂停。麦克风检测只能在真机上测试，无头测试无法验证。',
     foot:'记录只存在这台设备上（localStorage）', today:'今日累计', nohist:'暂无记录', cleared:'记录已清除', need_mic:'需要麦克风权限才能开始。请在浏览器里允许麦克风。',
     sens_low:'低', sens_mid:'中', sens_high:'高', saved:'已保存本次练琴', hz:'Hz', note_none:'—'
@@ -118,7 +119,7 @@ const I18N = {
     mic_off:'Mic: off', mic_on:'Mic: on', start:'▶ Start practice', pause:'⏸ Pause', resume:'▶ Resume', end:'■ Finish',
     tip:'Put the phone by the piano. After you press Start, only real piano playing counts. Random banging, talking, or walking away does not count.',
     sensitivity:'Sensitivity', sens_tip:'Higher catches soft playing more easily, but may also count loud talking nearby. Lower is stricter.',
-    history:'History', clear:'Clear history', honest_title:'v0.1 honest note:',
+    history:'History', clear:'Clear history', export:'Export backup', import:'Import backup', honest_title:'v0.1 honest note:', nohist:'No records yet', cleared:'History cleared', need_mic:'Microphone permission is needed to start. Please allow the mic in the browser.',
     honest:' This is heuristic detection (volume + autocorrelation pitch + spectral flatness), not XiaoYezi-level AI recognition. Fast runs or very soft playing may be undercounted; loud talking very close to the mic may be miscounted. There is a 15s grace after playing stops (reading the score or feeling out notes still counts); only after 15s with no sound does it pause. Mic detection can only be tested on a real device, not headlessly.',
     foot:'Records stay on this device only (localStorage)', today:"Today's total", nohist:'No records yet', cleared:'History cleared', need_mic:'Microphone permission is needed to start. Please allow the mic in the browser.',
     sens_low:'Low', sens_mid:'Medium', sens_high:'High', saved:'Practice saved', hz:'Hz', note_none:'—'
@@ -263,6 +264,72 @@ document.getElementById('clearBtn').onclick = ()=>{
   if(confirm(lang==='zh' ? '确定清除全部记录吗？' : 'Clear all history?')){
     localStorage.removeItem(KEY); renderHistory(); updateToday(); alert(t('cleared'));
   }
+};
+
+// ---- 本地备份 v0.1.4：导出 JSON 文件 / 导入合并，不走任何账号 ----
+// 备份格式：{ app:'maodouqinyin', version:1, exportedAt, records:[{child,date,seconds,start,end}] }
+// 导入按 syncRecordId（child|date|start|seconds）去重：已有的跳过，只追加新记录，
+// 从不删除现有记录，所以误导错文件也不会丢数据。
+function buildBackup(hist){
+  return { app: 'maodouqinyin', version: 1, exportedAt: new Date().toISOString(),
+    records: (hist || []).map(x => ({ child: x.child, date: x.date, seconds: x.seconds, start: x.start || null, end: x.end || null })) };
+}
+function validBackupRecord(x){
+  return x && typeof x.child === 'string' && x.child.length > 0 &&
+    typeof x.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.date) &&
+    Number.isInteger(x.seconds) && x.seconds > 0;
+}
+function parseBackup(text){
+  let data;
+  try { data = JSON.parse(text); } catch(e){ throw new Error('bad json'); }
+  const raw = Array.isArray(data) ? data : (data && Array.isArray(data.records) ? data.records : null);
+  if(!raw) throw new Error('bad format');
+  const records = []; let invalid = 0;
+  raw.forEach(x => {
+    if(validBackupRecord(x)) records.push({ child: x.child, date: x.date, seconds: x.seconds, start: x.start || null, end: x.end || null });
+    else invalid++;
+  });
+  return { records: records, invalid: invalid };
+}
+function mergeHistory(existing, incoming){
+  const seen = {}; existing.forEach(r => { seen[syncRecordId(r)] = true; });
+  const merged = existing.slice(); let added = 0, dup = 0;
+  incoming.forEach(r => {
+    const id = syncRecordId(r);
+    if(seen[id]) dup++; else { seen[id] = true; merged.push(r); added++; }
+  });
+  return { merged: merged, added: added, dup: dup };
+}
+function importSummary(added, dup, invalid){
+  if(lang === 'zh') return '导入完成：新增 ' + added + ' 条，已有 ' + dup + ' 条跳过' + (invalid ? '，无效 ' + invalid + ' 条' : '');
+  return 'Import done: ' + added + ' added, ' + dup + ' already existed (skipped)' + (invalid ? ', ' + invalid + ' invalid' : '');
+}
+document.getElementById('exportBtn').onclick = ()=>{
+  const h = loadHist();
+  if(!h.length){ alert(t('nohist')); return; }
+  const blob = new Blob([JSON.stringify(buildBackup(h), null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'maodouqinyin-backup-' + todayStr() + '.json';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+};
+document.getElementById('importBtn').onclick = ()=>{ document.getElementById('importFile').click(); };
+document.getElementById('importFile').onchange = (ev)=>{
+  const file = ev.target.files && ev.target.files[0];
+  ev.target.value = '';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    let parsed;
+    try { parsed = parseBackup(reader.result); }
+    catch(e){ alert(lang==='zh' ? '导入文件无效：不是毛豆琴音的备份文件。' : 'Invalid file: not a MaoDouQinYin backup.'); return; }
+    const res = mergeHistory(loadHist(), parsed.records);
+    saveHist(res.merged);
+    renderHistory(); updateToday();
+    alert(importSummary(res.added, res.dup, parsed.invalid));
+  };
+  reader.readAsText(file);
 };
 
 // ---- pitch detection (autocorrelation) ----
