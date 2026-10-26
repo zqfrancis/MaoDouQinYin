@@ -44,6 +44,14 @@
   .warn b{color:#8a2b12}
   footer{text-align:center;color:#a98f6d;font-size:12px;margin-top:16px}
   .smallbtn{border:1px solid #e0c9a8;background:#fff;border-radius:10px;padding:6px 10px;font-size:13px;cursor:pointer}
+  .photos{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+  .photo{position:relative;width:104px}
+  .photo img{width:104px;height:140px;object-fit:cover;border:1px solid #f0dfc2;border-radius:12px;cursor:pointer;background:#fff8ee}
+  .photo button{position:absolute;top:-8px;right:-8px;width:26px;height:26px;border-radius:50%;border:0;background:#2b2118;color:#fff;font-size:15px;cursor:pointer;line-height:1}
+  #lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:50;align-items:center;justify-content:center;flex-direction:column;padding:16px}
+  #lightbox.open{display:flex}
+  #lightbox img{max-width:100%;max-height:88vh;border-radius:8px}
+  #lightbox div{color:#fff;font-size:13px;margin-top:10px}
 </style>
 </head>
 <body>
@@ -62,6 +70,13 @@
       <button class="kid active" id="kidAaron">Aaron<small data-i18n="brother">哥哥</small></button>
       <button class="kid" id="kidAbigail">Abigail<small data-i18n="sister">妹妹</small></button>
     </div>
+  </div>
+
+  <div class="card">
+    <div class="row"><span data-i18n="score">乐谱照片</span><button class="smallbtn" id="scoreAddBtn" data-i18n="score_add">＋ 添加照片</button></div>
+    <input type="file" id="scoreFile" accept="image/*" style="display:none">
+    <p style="font-size:13px;color:#8a6d4d;margin:6px 0 0;line-height:1.6" data-i18n="score_tip">给当前孩子贴一张乐谱照片，练琴时放在旁边看。照片只存在这台设备上，不上传服务器。</p>
+    <div class="photos" id="scorePhotos"></div>
   </div>
 
   <div class="card">
@@ -97,8 +112,9 @@
     <b data-i18n="honest_title">v0.1 诚实说明：</b><span data-i18n="honest"> 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。停下后有 15 秒宽限（看谱、摸音都算），15 秒内再弹就接着计，超过 15 秒没声才暂停。麦克风检测只能在真机上测试，无头测试无法验证。</span>
   </div>
 
-  <footer>毛豆琴音 v0.1.4 · <span data-i18n="foot">记录只存在这台设备上（localStorage）</span></footer>
+  <footer>毛豆琴音 v0.1.5 · <span data-i18n="foot">记录和照片只存在这台设备上（localStorage）</span></footer>
 </div>
+<div id="lightbox"><img id="lightboxImg" alt=""><div data-i18n="score_close">点一下关闭</div></div>
 
 <script>
 const I18N = {
@@ -111,7 +127,9 @@ const I18N = {
     history:'记录', clear:'清除记录', export:'导出备份', import:'导入备份', honest_title:'v0.1 诚实说明：', nohist:'暂无记录', cleared:'记录已清除', need_mic:'需要麦克风权限才能开始。请在浏览器里允许麦克风。',
     honest:' 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。停下后有 15 秒宽限（看谱、摸音都算），15 秒内再弹就接着计，超过 15 秒没声才暂停。麦克风检测只能在真机上测试，无头测试无法验证。',
     foot:'记录只存在这台设备上（localStorage）', today:'今日累计', nohist:'暂无记录', cleared:'记录已清除', need_mic:'需要麦克风权限才能开始。请在浏览器里允许麦克风。',
-    sens_low:'低', sens_mid:'中', sens_high:'高', saved:'已保存本次练琴', hz:'Hz', note_none:'—'
+    sens_low:'低', sens_mid:'中', sens_high:'高', saved:'已保存本次练琴', hz:'Hz', note_none:'—',
+    score:'乐谱照片', score_tip:'给当前孩子贴一张乐谱照片，练琴时放在旁边看。照片只存在这台设备上，不上传服务器。', score_add:'＋ 添加照片', score_none:'还没有乐谱照片', score_del_q:'删除这张乐谱照片吗？', score_full:'这个孩子的照片已满 30 张，先删一张再添加。', score_big:'照片太大，保存失败。换张小一点的照片再试。', score_close:'点一下关闭',
+    foot:'记录和照片只存在这台设备上（localStorage）'
   },
   en: {
     title:'MaoDou Piano', subtitle:'Piano time only · 只给真正的弹琴计时', who:'Who is practicing today?', brother:'Brother', sister:'Sister',
@@ -122,7 +140,9 @@ const I18N = {
     history:'History', clear:'Clear history', export:'Export backup', import:'Import backup', honest_title:'v0.1 honest note:', nohist:'No records yet', cleared:'History cleared', need_mic:'Microphone permission is needed to start. Please allow the mic in the browser.',
     honest:' This is heuristic detection (volume + autocorrelation pitch + spectral flatness), not XiaoYezi-level AI recognition. Fast runs or very soft playing may be undercounted; loud talking very close to the mic may be miscounted. There is a 15s grace after playing stops (reading the score or feeling out notes still counts); only after 15s with no sound does it pause. Mic detection can only be tested on a real device, not headlessly.',
     foot:'Records stay on this device only (localStorage)', today:"Today's total", nohist:'No records yet', cleared:'History cleared', need_mic:'Microphone permission is needed to start. Please allow the mic in the browser.',
-    sens_low:'Low', sens_mid:'Medium', sens_high:'High', saved:'Practice saved', hz:'Hz', note_none:'—'
+    sens_low:'Low', sens_mid:'Medium', sens_high:'High', saved:'Practice saved', hz:'Hz', note_none:'—',
+    score:'Score photos', score_tip:'Add a photo of the score for this child, to keep beside the timer while practicing. Photos stay on this device only and are never uploaded.', score_add:'＋ Add photo', score_none:'No score photos yet', score_del_q:'Delete this score photo?', score_full:'This child already has 30 photos. Delete one first.', score_big:'Photo too large to save. Try a smaller photo.', score_close:'Tap to close',
+    foot:'Records and photos stay on this device only (localStorage)'
   }
 };
 let lang = localStorage.getItem('mdqy_lang') || 'zh';
@@ -130,7 +150,7 @@ function t(k){ return (I18N[lang] && I18N[lang][k]) || I18N.zh[k] || k; }
 function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
   document.getElementById('langBtn').textContent = lang === 'zh' ? 'EN' : '中文';
-  renderHistory(); updateSensLabel(); updateToday();
+  renderHistory(); updateSensLabel(); updateToday(); renderScorePhotos();
 }
 document.getElementById('langBtn').onclick = ()=>{
   lang = lang === 'zh' ? 'en' : 'zh';
@@ -209,7 +229,7 @@ function selectKid(name){
   child = name;
   kidAaron.classList.toggle('active', name==='Aaron');
   kidAbigail.classList.toggle('active', name==='Abigail');
-  updateToday(); renderHistory();
+  updateToday(); renderHistory(); renderScorePhotos();
 }
 kidAaron.onclick = ()=>selectKid('Aaron');
 kidAbigail.onclick = ()=>selectKid('Abigail');
@@ -331,6 +351,82 @@ document.getElementById('importFile').onchange = (ev)=>{
   };
   reader.readAsText(file);
 };
+
+// ---- 乐谱照片 v0.1.5：按孩子存本地（localStorage），不上传任何服务器 ----
+// 照片记录：{id, child, name, dataUrl, addedAt}。手机相机原图先缩到最长边 1200px、
+// 转 JPEG 才存，否则 localStorage 很快被一张原图塞满。存取的纯函数可无头测试，
+// 图片读取/缩放/放大显示只能在真机浏览器里验。
+const PHOTO_KEY = 'maodouqinyin_photos_v1';
+const PHOTO_MAX_PER_CHILD = 30;
+function loadPhotos(){
+  try { const v = JSON.parse(localStorage.getItem(PHOTO_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch(e){ return []; }
+}
+function savePhotos(p){ localStorage.setItem(PHOTO_KEY, JSON.stringify(p)); }
+function listPhotosFor(all, childName){ return (all || []).filter(x => x.child === childName); }
+function addPhotoRecord(all, rec){
+  const list = (all || []).slice();
+  if(!rec || typeof rec.child !== 'string' || !rec.child || typeof rec.dataUrl !== 'string' || !rec.dataUrl) return { list: list, added: false };
+  if(listPhotosFor(list, rec.child).length >= PHOTO_MAX_PER_CHILD) return { list: list, added: false, full: true };
+  const item = { id: rec.id || ('p' + Date.now() + '_' + Math.floor(Math.random()*1e9)),
+    child: rec.child, name: rec.name || '', dataUrl: rec.dataUrl, addedAt: rec.addedAt || new Date().toISOString() };
+  list.push(item);
+  return { list: list, added: true, item: item };
+}
+function removePhotoRecord(all, id){ return (all || []).filter(x => x.id !== id); }
+function renderScorePhotos(){
+  const el = document.getElementById('scorePhotos');
+  if(!el) return;
+  const photos = listPhotosFor(loadPhotos(), child);
+  el.innerHTML = '';
+  if(!photos.length){ el.textContent = t('score_none'); return; }
+  photos.forEach(p => {
+    const box = document.createElement('div');
+    box.className = 'photo';
+    const img = document.createElement('img');
+    img.src = p.dataUrl; img.alt = p.name || '';
+    img.onclick = ()=>{ document.getElementById('lightboxImg').src = p.dataUrl; document.getElementById('lightbox').classList.add('open'); };
+    const del = document.createElement('button');
+    del.textContent = '×';
+    del.onclick = ()=>{
+      if(confirm(t('score_del_q'))){ savePhotos(removePhotoRecord(loadPhotos(), p.id)); renderScorePhotos(); }
+    };
+    box.appendChild(img); box.appendChild(del);
+    el.appendChild(box);
+  });
+}
+function downscaleDataUrl(dataUrl, done){
+  try {
+    const img = new Image();
+    img.onload = ()=>{
+      const maxSide = 1200;
+      const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+      if(scale >= 1){ done(dataUrl); return; }
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      done(c.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = ()=>done(dataUrl);
+    img.src = dataUrl;
+  } catch(e){ done(dataUrl); }
+}
+document.getElementById('scoreAddBtn').onclick = ()=>{ document.getElementById('scoreFile').click(); };
+document.getElementById('scoreFile').onchange = (ev)=>{
+  const file = ev.target.files && ev.target.files[0];
+  ev.target.value = '';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    downscaleDataUrl(reader.result, (url)=>{
+      const res = addPhotoRecord(loadPhotos(), { child: child, name: file.name, dataUrl: url });
+      if(!res.added){ alert(t(res.full ? 'score_full' : 'score_big')); return; }
+      try { savePhotos(res.list); } catch(e){ alert(t('score_big')); return; }
+      renderScorePhotos();
+    });
+  };
+  reader.readAsDataURL(file);
+};
+document.getElementById('lightbox').onclick = ()=>{ document.getElementById('lightbox').classList.remove('open'); };
 
 // ---- pitch detection (autocorrelation) ----
 const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
