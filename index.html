@@ -44,6 +44,8 @@
   .warn b{color:#8a2b12}
   footer{text-align:center;color:#a98f6d;font-size:12px;margin-top:16px}
   .smallbtn{border:1px solid #e0c9a8;background:#fff;border-radius:10px;padding:6px 10px;font-size:13px;cursor:pointer}
+  .pieceinput{flex:1;border:1px solid #e0c9a8;border-radius:10px;padding:8px 10px;font-size:14px;background:#fffdf8}
+  .piecesel{width:100%;border:1px solid #e0c9a8;border-radius:10px;padding:8px 10px;font-size:14px;background:#fffdf8;margin-top:8px}
   .photos{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
   .photo{position:relative;width:104px}
   .photo img{width:104px;height:140px;object-fit:cover;border:1px solid #f0dfc2;border-radius:12px;cursor:pointer;background:#fff8ee}
@@ -70,6 +72,14 @@
       <button class="kid active" id="kidAaron">Aaron<small data-i18n="brother">哥哥</small></button>
       <button class="kid" id="kidAbigail">Abigail<small data-i18n="sister">妹妹</small></button>
     </div>
+  </div>
+
+  <div class="card">
+    <div class="row"><span data-i18n="piece">曲目库</span><button class="smallbtn" id="pieceDelBtn" data-i18n="piece_del">删除曲子</button></div>
+    <p style="font-size:13px;color:#8a6d4d;margin:6px 0 0;line-height:1.6" data-i18n="piece_tip">先选一首曲子再开始练琴：选中的曲子只显示它自己的乐谱照片，选中的状态下新加的照片会自动归到这首曲子。</p>
+    <div style="display:flex;gap:8px;margin-top:8px"><input class="pieceinput" id="pieceName" data-i18n-placeholder="piece_name_ph" placeholder="曲子名字，如：小星星"><button class="smallbtn" id="pieceAddBtn" data-i18n="piece_add">＋ 新建曲子</button></div>
+    <select class="piecesel" id="pieceSelect"></select>
+    <p style="font-size:13px;color:#8a6d4d;margin:8px 0 0" id="pieceInfo"></p>
   </div>
 
   <div class="card">
@@ -112,7 +122,7 @@
     <b data-i18n="honest_title">v0.1 诚实说明：</b><span data-i18n="honest"> 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。停下后有 15 秒宽限（看谱、摸音都算），15 秒内再弹就接着计，超过 15 秒没声才暂停。麦克风检测只能在真机上测试，无头测试无法验证。</span>
   </div>
 
-  <footer>毛豆琴音 v0.1.5 · <span data-i18n="foot">记录和照片只存在这台设备上（localStorage）</span></footer>
+  <footer>毛豆琴音 v0.1.6 · <span data-i18n="foot">记录和照片只存在这台设备上（localStorage）</span></footer>
 </div>
 <div id="lightbox"><img id="lightboxImg" alt=""><div data-i18n="score_close">点一下关闭</div></div>
 
@@ -129,6 +139,7 @@ const I18N = {
     foot:'记录只存在这台设备上（localStorage）', today:'今日累计', nohist:'暂无记录', cleared:'记录已清除', need_mic:'需要麦克风权限才能开始。请在浏览器里允许麦克风。',
     sens_low:'低', sens_mid:'中', sens_high:'高', saved:'已保存本次练琴', hz:'Hz', note_none:'—',
     score:'乐谱照片', score_tip:'给当前孩子贴一张乐谱照片，练琴时放在旁边看。照片只存在这台设备上，不上传服务器。', score_add:'＋ 添加照片', score_none:'还没有乐谱照片', score_del_q:'删除这张乐谱照片吗？', score_full:'这个孩子的照片已满 30 张，先删一张再添加。', score_big:'照片太大，保存失败。换张小一点的照片再试。', score_close:'点一下关闭',
+    piece:'曲目库', piece_tip:'先选一首曲子再开始练琴：选中的曲子只显示它自己的乐谱照片，选中的状态下新加的照片会自动归到这首曲子。', piece_add:'＋ 新建曲子', piece_del:'删除曲子', piece_name_ph:'曲子名字，如：小星星', piece_none_sel:'不选曲子（显示全部照片）', piece_empty:'还没有曲子，先在上面起个名字新建一首。', piece_dup:'这个孩子已经有同名曲子了。', piece_del_q:'删除这首曲子吗？照片会保留，不选曲子时还能看到。', piece_count:'这首曲子有 {n} 张乐谱照片。', piece_nophoto:'这首曲子还没有乐谱照片，在下面加一张就会归到它。',
     foot:'记录和照片只存在这台设备上（localStorage）'
   },
   en: {
@@ -142,6 +153,7 @@ const I18N = {
     foot:'Records stay on this device only (localStorage)', today:"Today's total", nohist:'No records yet', cleared:'History cleared', need_mic:'Microphone permission is needed to start. Please allow the mic in the browser.',
     sens_low:'Low', sens_mid:'Medium', sens_high:'High', saved:'Practice saved', hz:'Hz', note_none:'—',
     score:'Score photos', score_tip:'Add a photo of the score for this child, to keep beside the timer while practicing. Photos stay on this device only and are never uploaded.', score_add:'＋ Add photo', score_none:'No score photos yet', score_del_q:'Delete this score photo?', score_full:'This child already has 30 photos. Delete one first.', score_big:'Photo too large to save. Try a smaller photo.', score_close:'Tap to close',
+    piece:'Pieces', piece_tip:'Pick a piece before you start: the selected piece shows only its own score photos, and a photo added while it is selected is filed under it.', piece_add:'＋ New piece', piece_del:'Delete piece', piece_name_ph:'Piece name, e.g. Twinkle Twinkle', piece_none_sel:'No piece selected (show all photos)', piece_empty:'No pieces yet. Name one above to create it.', piece_dup:'This child already has a piece with that name.', piece_del_q:'Delete this piece? Its photos stay and show again when no piece is selected.', piece_count:'This piece has {n} score photo(s).', piece_nophoto:'This piece has no score photos yet. Add one below and it will be filed under it.',
     foot:'Records and photos stay on this device only (localStorage)'
   }
 };
@@ -149,8 +161,9 @@ let lang = localStorage.getItem('mdqy_lang') || 'zh';
 function t(k){ return (I18N[lang] && I18N[lang][k]) || I18N.zh[k] || k; }
 function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{ el.placeholder = t(el.getAttribute('data-i18n-placeholder')); });
   document.getElementById('langBtn').textContent = lang === 'zh' ? 'EN' : '中文';
-  renderHistory(); updateSensLabel(); updateToday(); renderScorePhotos();
+  renderHistory(); updateSensLabel(); updateToday(); renderPieces(); renderScorePhotos();
 }
 document.getElementById('langBtn').onclick = ()=>{
   lang = lang === 'zh' ? 'en' : 'zh';
@@ -229,7 +242,7 @@ function selectKid(name){
   child = name;
   kidAaron.classList.toggle('active', name==='Aaron');
   kidAbigail.classList.toggle('active', name==='Abigail');
-  updateToday(); renderHistory(); renderScorePhotos();
+  updateToday(); renderHistory(); renderPieces(); renderScorePhotos();
 }
 kidAaron.onclick = ()=>selectKid('Aaron');
 kidAbigail.onclick = ()=>selectKid('Abigail');
@@ -376,9 +389,10 @@ function removePhotoRecord(all, id){ return (all || []).filter(x => x.id !== id)
 function renderScorePhotos(){
   const el = document.getElementById('scorePhotos');
   if(!el) return;
-  const photos = listPhotosFor(loadPhotos(), child);
+  const currentPiece = getCurrentPiece();
+  const photos = photosForPiece(listPhotosFor(loadPhotos(), child), currentPiece);
   el.innerHTML = '';
-  if(!photos.length){ el.textContent = t('score_none'); return; }
+  if(!photos.length){ el.textContent = currentPiece ? t('piece_nophoto') : t('score_none'); return; }
   photos.forEach(p => {
     const box = document.createElement('div');
     box.className = 'photo';
@@ -388,7 +402,7 @@ function renderScorePhotos(){
     const del = document.createElement('button');
     del.textContent = '×';
     del.onclick = ()=>{
-      if(confirm(t('score_del_q'))){ savePhotos(removePhotoRecord(loadPhotos(), p.id)); renderScorePhotos(); }
+      if(confirm(t('score_del_q'))){ savePhotos(removePhotoRecord(loadPhotos(), p.id)); savePieces(detachPhotoFromPieces(loadPieces(), p.id)); renderPieces(); renderScorePhotos(); }
     };
     box.appendChild(img); box.appendChild(del);
     el.appendChild(box);
@@ -421,12 +435,116 @@ document.getElementById('scoreFile').onchange = (ev)=>{
       const res = addPhotoRecord(loadPhotos(), { child: child, name: file.name, dataUrl: url });
       if(!res.added){ alert(t(res.full ? 'score_full' : 'score_big')); return; }
       try { savePhotos(res.list); } catch(e){ alert(t('score_big')); return; }
-      renderScorePhotos();
+      const piece = getCurrentPiece();
+      if(piece) savePieces(attachPhotoToPiece(loadPieces(), piece.id, res.item.id));
+      renderPieces(); renderScorePhotos();
     });
   };
   reader.readAsDataURL(file);
 };
 document.getElementById('lightbox').onclick = ()=>{ document.getElementById('lightbox').classList.remove('open'); };
+
+// ---- 曲目库 v0.1.6：每首曲子 = 名字 + 孩子 + 若干乐谱照片 id ----
+// 曲子记录：{id, child, name, photoIds:[], createdAt}，只存本机 localStorage，不上传。
+// 照片本身仍归孩子所有（v0.1.5 的照片表不动）；删曲子不删照片，删照片时顺带从
+// 所有曲子里摘掉它的 id。练琴前先选曲子：选中的曲子只显示它自己的照片。
+const PIECE_KEY = 'maodouqinyin_pieces_v1';
+const CURRENT_PIECE_KEY = 'maodouqinyin_current_piece_v1';
+function loadPieces(){
+  try { const v = JSON.parse(localStorage.getItem(PIECE_KEY) || '[]'); return Array.isArray(v) ? v : []; } catch(e){ return []; }
+}
+function savePieces(p){ localStorage.setItem(PIECE_KEY, JSON.stringify(p)); }
+function listPiecesFor(all, childName){ return (all || []).filter(x => x.child === childName); }
+function getPiece(all, id){ return (all || []).find(x => x.id === id) || null; }
+function createPiece(all, childName, name){
+  const list = (all || []).slice();
+  const clean = (name || '').trim();
+  if(!clean) return { list: list, added: false };
+  if(listPiecesFor(list, childName).some(x => x.name === clean)) return { list: list, added: false, dup: true };
+  const piece = { id: 'pc' + Date.now() + '_' + Math.floor(Math.random()*1e9), child: childName, name: clean, photoIds: [], createdAt: new Date().toISOString() };
+  list.push(piece);
+  return { list: list, added: true, piece: piece };
+}
+function deletePiece(all, id){ return (all || []).filter(x => x.id !== id); }
+function attachPhotoToPiece(all, pieceId, photoId){
+  const list = (all || []).map(x => {
+    if(x.id !== pieceId) return x;
+    const ids = (x.photoIds || []).slice();
+    if(photoId && ids.indexOf(photoId) === -1) ids.push(photoId);
+    return Object.assign({}, x, { photoIds: ids });
+  });
+  return list;
+}
+function detachPhotoFromPieces(all, photoId){
+  return (all || []).map(x => Object.assign({}, x, { photoIds: (x.photoIds || []).filter(id => id !== photoId) }));
+}
+function loadCurrentPieces(){
+  try { const v = JSON.parse(localStorage.getItem(CURRENT_PIECE_KEY) || '{}'); return (v && typeof v === 'object') ? v : {}; } catch(e){ return {}; }
+}
+function saveCurrentPieces(m){ localStorage.setItem(CURRENT_PIECE_KEY, JSON.stringify(m)); }
+function getCurrentPieceId(map, childName){ return (map || {})[childName] || null; }
+function setCurrentPieceId(map, childName, id){
+  const m = Object.assign({}, map || {});
+  if(id) m[childName] = id; else delete m[childName];
+  return m;
+}
+function getCurrentPiece(){
+  const id = getCurrentPieceId(loadCurrentPieces(), child);
+  if(!id) return null;
+  const piece = getPiece(loadPieces(), id);
+  return (piece && piece.child === child) ? piece : null;
+}
+function photosForPiece(photos, piece){
+  if(!piece) return photos || [];
+  const ids = piece.photoIds || [];
+  return (photos || []).filter(p => ids.indexOf(p.id) !== -1);
+}
+function renderPieces(){
+  const sel = document.getElementById('pieceSelect');
+  const info = document.getElementById('pieceInfo');
+  if(!sel || !info) return;
+  const pieces = listPiecesFor(loadPieces(), child);
+  const current = getCurrentPiece();
+  sel.innerHTML = '';
+  const noneOpt = document.createElement('option');
+  noneOpt.value = ''; noneOpt.textContent = t('piece_none_sel');
+  sel.appendChild(noneOpt);
+  pieces.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id; opt.textContent = p.name;
+    sel.appendChild(opt);
+  });
+  sel.value = current ? current.id : '';
+  if(!pieces.length) info.textContent = t('piece_empty');
+  else if(!current) info.textContent = '';
+  else {
+    const n = photosForPiece(listPhotosFor(loadPhotos(), child), current).length;
+    info.textContent = n ? t('piece_count').replace('{n}', n) : t('piece_nophoto');
+  }
+}
+document.getElementById('pieceAddBtn').onclick = ()=>{
+  const input = document.getElementById('pieceName');
+  const res = createPiece(loadPieces(), child, input ? input.value : '');
+  if(!res.added){ alert(t(res.dup ? 'piece_dup' : 'piece_name_ph')); return; }
+  savePieces(res.list);
+  saveCurrentPieces(setCurrentPieceId(loadCurrentPieces(), child, res.piece.id));
+  if(input) input.value = '';
+  renderPieces(); renderScorePhotos();
+};
+document.getElementById('pieceSelect').onchange = (ev)=>{
+  const id = ev && ev.target ? ev.target.value : document.getElementById('pieceSelect').value;
+  saveCurrentPieces(setCurrentPieceId(loadCurrentPieces(), child, id || null));
+  renderPieces(); renderScorePhotos();
+};
+document.getElementById('pieceDelBtn').onclick = ()=>{
+  const current = getCurrentPiece();
+  if(!current) return;
+  if(confirm(t('piece_del_q'))){
+    savePieces(deletePiece(loadPieces(), current.id));
+    saveCurrentPieces(setCurrentPieceId(loadCurrentPieces(), child, null));
+    renderPieces(); renderScorePhotos();
+  }
+};
 
 // ---- pitch detection (autocorrelation) ----
 const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
