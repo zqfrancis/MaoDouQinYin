@@ -54,6 +54,10 @@
   #lightbox.open{display:flex}
   #lightbox img{max-width:100%;max-height:88vh;border-radius:8px}
   #lightbox div{color:#fff;font-size:13px;margin-top:10px}
+  .demoinput{width:100%;border:1px solid #e0c9a8;border-radius:10px;padding:8px 10px;font-size:14px;background:#fffdf8;min-height:64px;resize:vertical}
+  .demorow{display:flex;gap:8px;margin-top:8px;align-items:center}
+  .demorow input[type=range]{flex:1}
+  #demoNow{font-size:14px;font-weight:700;min-height:22px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -90,6 +94,14 @@
   </div>
 
   <div class="card">
+    <div class="row"><span data-i18n="demo">示范弹奏</span><span style="display:flex;gap:6px"><button class="smallbtn" id="demoExampleBtn" data-i18n="demo_example">填入示例</button><button class="smallbtn" id="demoStopBtn" data-i18n="demo_stop">■ 停止</button></span></div>
+    <p style="font-size:13px;color:#8a6d4d;margin:6px 0 0;line-height:1.6" data-i18n="demo_tip">手动输入一串音符，点播放就能听到示范。格式：音名 + 八度，冒号后跟拍数，如 C4:1；R 表示休止，如 R:1；不写拍数默认 1 拍。不连任何识别功能，示范只弹你输入的音符。</p>
+    <textarea class="demoinput" id="demoInput" data-i18n-placeholder="demo_ph" placeholder="如：C4:1 C4:1 G4:1 G4:1 A4:1 A4:1 G4:2"></textarea>
+    <div class="demorow"><span style="font-size:13px;color:#8a6d4d" data-i18n="demo_speed">速度</span><input type="range" id="demoSpeed" min="0.5" max="2" step="0.25" value="1"><span id="demoSpeedLabel" style="font-size:13px;color:#8a6d4d">1×</span><button class="smallbtn" id="demoPlayBtn" data-i18n="demo_play">▶ 播放示范</button></div>
+    <div id="demoNow"></div>
+  </div>
+
+  <div class="card">
     <div class="timer">
       <div id="time">00:00</div>
       <div><span id="status" class="nosound" data-i18n="st_idle">未开始</span></div>
@@ -122,7 +134,7 @@
     <b data-i18n="honest_title">v0.1 诚实说明：</b><span data-i18n="honest"> 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。停下后有 15 秒宽限（看谱、摸音都算），15 秒内再弹就接着计，超过 15 秒没声才暂停。麦克风检测只能在真机上测试，无头测试无法验证。</span>
   </div>
 
-  <footer>毛豆琴音 v0.1.6 · <span data-i18n="foot">记录和照片只存在这台设备上（localStorage）</span></footer>
+  <footer>毛豆琴音 v0.1.7 · <span data-i18n="foot">记录和照片只存在这台设备上（localStorage）</span></footer>
 </div>
 <div id="lightbox"><img id="lightboxImg" alt=""><div data-i18n="score_close">点一下关闭</div></div>
 
@@ -140,6 +152,7 @@ const I18N = {
     sens_low:'低', sens_mid:'中', sens_high:'高', saved:'已保存本次练琴', hz:'Hz', note_none:'—',
     score:'乐谱照片', score_tip:'给当前孩子贴一张乐谱照片，练琴时放在旁边看。照片只存在这台设备上，不上传服务器。', score_add:'＋ 添加照片', score_none:'还没有乐谱照片', score_del_q:'删除这张乐谱照片吗？', score_full:'这个孩子的照片已满 30 张，先删一张再添加。', score_big:'照片太大，保存失败。换张小一点的照片再试。', score_close:'点一下关闭',
     piece:'曲目库', piece_tip:'先选一首曲子再开始练琴：选中的曲子只显示它自己的乐谱照片，选中的状态下新加的照片会自动归到这首曲子。', piece_add:'＋ 新建曲子', piece_del:'删除曲子', piece_name_ph:'曲子名字，如：小星星', piece_none_sel:'不选曲子（显示全部照片）', piece_empty:'还没有曲子，先在上面起个名字新建一首。', piece_dup:'这个孩子已经有同名曲子了。', piece_del_q:'删除这首曲子吗？照片会保留，不选曲子时还能看到。', piece_count:'这首曲子有 {n} 张乐谱照片。', piece_nophoto:'这首曲子还没有乐谱照片，在下面加一张就会归到它。',
+    demo:'示范弹奏', demo_tip:'手动输入一串音符，点播放就能听到示范。格式：音名 + 八度，冒号后跟拍数，如 C4:1；R 表示休止，如 R:1；不写拍数默认 1 拍。不连任何识别功能，示范只弹你输入的音符。', demo_ph:'如：C4:1 C4:1 G4:1 G4:1 A4:1 A4:1 G4:2', demo_example:'填入示例', demo_play:'▶ 播放示范', demo_stop:'■ 停止', demo_speed:'速度', demo_empty:'先输入至少一个音符再播放。', demo_invalid:'跳过了无效的输入：', demo_playing:'正在示范：', demo_done:'示范播完了',
     foot:'记录和照片只存在这台设备上（localStorage）'
   },
   en: {
@@ -154,6 +167,7 @@ const I18N = {
     sens_low:'Low', sens_mid:'Medium', sens_high:'High', saved:'Practice saved', hz:'Hz', note_none:'—',
     score:'Score photos', score_tip:'Add a photo of the score for this child, to keep beside the timer while practicing. Photos stay on this device only and are never uploaded.', score_add:'＋ Add photo', score_none:'No score photos yet', score_del_q:'Delete this score photo?', score_full:'This child already has 30 photos. Delete one first.', score_big:'Photo too large to save. Try a smaller photo.', score_close:'Tap to close',
     piece:'Pieces', piece_tip:'Pick a piece before you start: the selected piece shows only its own score photos, and a photo added while it is selected is filed under it.', piece_add:'＋ New piece', piece_del:'Delete piece', piece_name_ph:'Piece name, e.g. Twinkle Twinkle', piece_none_sel:'No piece selected (show all photos)', piece_empty:'No pieces yet. Name one above to create it.', piece_dup:'This child already has a piece with that name.', piece_del_q:'Delete this piece? Its photos stay and show again when no piece is selected.', piece_count:'This piece has {n} score photo(s).', piece_nophoto:'This piece has no score photos yet. Add one below and it will be filed under it.',
+    demo:'Demo playback', demo_tip:'Type notes by hand and press play to hear a demo. Format: note name + octave, colon + beats, e.g. C4:1; R means rest, e.g. R:1; beats default to 1. No recognition is involved: the demo only plays the notes you typed.', demo_ph:'e.g. C4:1 C4:1 G4:1 G4:1 A4:1 A4:1 G4:2', demo_example:'Fill example', demo_play:'▶ Play demo', demo_stop:'■ Stop', demo_speed:'Speed', demo_empty:'Type at least one note first.', demo_invalid:'Skipped invalid input: ', demo_playing:'Playing demo: ', demo_done:'Demo finished',
     foot:'Records and photos stay on this device only (localStorage)'
   }
 };
@@ -544,6 +558,115 @@ document.getElementById('pieceDelBtn').onclick = ()=>{
     saveCurrentPieces(setCurrentPieceId(loadCurrentPieces(), child, null));
     renderPieces(); renderScorePhotos();
   }
+};
+
+// ---- 示范弹奏 v0.1.7：手动音符序列，Web Audio 弹出来（不依赖识别） ----
+// 输入格式：空白/逗号分隔的 token。音符 = 音名 A–G + 可选 #/b + 可选八度（默认 4）
+// + 可选 :拍数（默认 1，0 < 拍数 ≤ 8）；R = 休止。解析是纯函数，可无头测试；
+// 真正出声只能在真机浏览器里验（需要用户点播放的手势才能建 AudioContext）。
+// 1 拍 = 0.5 秒 ÷ 速度倍数（1× 相当于一分钟 120 拍）。
+const DEMO_EXAMPLE = 'C4:1 C4:1 G4:1 G4:1 A4:1 A4:1 G4:2';
+const DEMO_BASE = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+function demoNoteFreq(midi){ return 440 * Math.pow(2, (midi - 69) / 12); }
+function demoBeatSeconds(speed){ const s = Number(speed) || 1; return 0.5 / s; }
+function parseDemoSequence(text){
+  const notes = [], invalid = [];
+  const tokens = String(text || '').split(/[\s,，、]+/).filter(Boolean);
+  tokens.forEach(tok => {
+    const rest = tok.match(/^R(?::(\d+(?:\.\d+)?))?$/i);
+    if(rest){
+      const beats = rest[1] ? Number(rest[1]) : 1;
+      if(beats > 0 && beats <= 8) notes.push({ rest: true, beats: beats });
+      else invalid.push(tok);
+      return;
+    }
+    const m = tok.match(/^([A-Ga-g])([#b])?(\d)?(?::(\d+(?:\.\d+)?))?$/);
+    if(!m){ invalid.push(tok); return; }
+    const letter = m[1].toUpperCase();
+    let semi = DEMO_BASE[letter];
+    if(m[2] === '#') semi += 1;
+    if(m[2] === 'b') semi -= 1;
+    const oct = m[3] ? Number(m[3]) : 4;
+    const beats = m[4] ? Number(m[4]) : 1;
+    const midi = (oct + 1) * 12 + semi;
+    if(beats <= 0 || beats > 8 || midi < 21 || midi > 108){ invalid.push(tok); return; }
+    notes.push({ rest: false, midi: midi, name: letter + (m[2] || '') + oct, beats: beats });
+  });
+  return { notes: notes, invalid: invalid };
+}
+function computeDemoSchedule(notes, speed){
+  const beat = demoBeatSeconds(speed);
+  let at = 0;
+  return (notes || []).map(n => {
+    const dur = n.beats * beat;
+    const item = { rest: !!n.rest, midi: n.midi || null, name: n.name || 'R',
+      freq: n.rest ? 0 : demoNoteFreq(n.midi), start: at, dur: n.rest ? dur : dur * 0.92, beats: n.beats };
+    at += dur;
+    return item;
+  });
+}
+let demoCtx = null, demoPlaying = false, demoTimers = [];
+function stopDemo(){
+  demoPlaying = false;
+  demoTimers.forEach(id => clearTimeout(id));
+  demoTimers = [];
+  if(demoCtx){ try { demoCtx.close(); } catch(e){} demoCtx = null; }
+  const nowEl = document.getElementById('demoNow');
+  if(nowEl) nowEl.textContent = '';
+  const playBtn = document.getElementById('demoPlayBtn');
+  if(playBtn) playBtn.disabled = false;
+}
+function playDemo(){
+  const input = document.getElementById('demoInput');
+  const nowEl = document.getElementById('demoNow');
+  const parsed = parseDemoSequence(input ? input.value : '');
+  if(!parsed.notes.length){ if(nowEl) nowEl.textContent = t('demo_empty'); alert(t('demo_empty')); return; }
+  stopDemo();
+  const speed = Number(document.getElementById('demoSpeed').value) || 1;
+  const schedule = computeDemoSchedule(parsed.notes, speed);
+  try {
+    demoCtx = new (window.AudioContext || window.webkitAudioContext)();
+  } catch(e){ if(nowEl) nowEl.textContent = t('demo_empty'); return; }
+  demoCtx.resume();
+  demoPlaying = true;
+  const playBtn = document.getElementById('demoPlayBtn');
+  if(playBtn) playBtn.disabled = true;
+  if(nowEl) nowEl.textContent = (parsed.invalid.length ? t('demo_invalid') + parsed.invalid.join(' ') + '  ' : '') + t('demo_playing') + parsed.notes.map(n => n.rest ? 'R' : n.name).join(' ');
+  const t0 = demoCtx.currentTime + 0.05;
+  schedule.forEach((item, i) => {
+    if(!item.rest){
+      const osc = demoCtx.createOscillator();
+      const gain = demoCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = item.freq;
+      gain.gain.setValueAtTime(0.0001, t0 + item.start);
+      gain.gain.exponentialRampToValueAtTime(0.25, t0 + item.start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + item.start + item.dur);
+      osc.connect(gain); gain.connect(demoCtx.destination);
+      osc.start(t0 + item.start);
+      osc.stop(t0 + item.start + item.dur + 0.05);
+    }
+    demoTimers.push(setTimeout(()=>{
+      if(!demoPlaying) return;
+      if(nowEl) nowEl.textContent = t('demo_playing') + (item.rest ? 'R' : item.name) + '  (' + (i + 1) + '/' + schedule.length + ')';
+    }, item.start * 1000));
+  });
+  const totalMs = schedule.length ? (schedule[schedule.length - 1].start + schedule[schedule.length - 1].dur) * 1000 : 0;
+  demoTimers.push(setTimeout(()=>{
+    if(!demoPlaying) return;
+    stopDemo();
+    if(nowEl) nowEl.textContent = t('demo_done');
+  }, totalMs + 100));
+}
+document.getElementById('demoExampleBtn').onclick = ()=>{
+  const input = document.getElementById('demoInput');
+  if(input) input.value = DEMO_EXAMPLE;
+};
+document.getElementById('demoPlayBtn').onclick = playDemo;
+document.getElementById('demoStopBtn').onclick = stopDemo;
+document.getElementById('demoSpeed').oninput = ()=>{
+  const label = document.getElementById('demoSpeedLabel');
+  if(label) label.textContent = (document.getElementById('demoSpeed').value || '1') + '×';
 };
 
 // ---- pitch detection (autocorrelation) ----
