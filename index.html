@@ -106,6 +106,20 @@
   </div>
 
   <div class="card">
+    <div class="row"><span data-i18n="follow">对照练习</span><span style="display:flex;gap:6px"><button class="smallbtn" id="followStartBtn" data-i18n="follow_start">▶ 开始对照</button><button class="smallbtn" id="followStopBtn" data-i18n="follow_stop">■ 停止对照</button></span></div>
+    <p style="font-size:13px;color:#8a6d4d;margin:6px 0 0;line-height:1.6" data-i18n="follow_tip">对照当前曲子保存的示范音符逐音练习：弹对当前音就变绿前进，弹错变红停在原地重试。先在曲目库选曲子并保存示范音符，再点开始练琴，弹琴时对照自动进行。</p>
+    <div style="text-align:center;margin-top:10px">
+      <div style="font-size:13px;color:#8a6d4d" data-i18n="follow_expected">当前应弹</div>
+      <div id="followExpected" style="font-size:40px;font-weight:800;min-height:48px">—</div>
+      <div style="font-size:13px;color:#8a6d4d;margin-top:6px"><span data-i18n="follow_played">你弹了</span>：<span id="followPlayed" style="font-weight:700">—</span></div>
+      <div id="followProgress" style="font-size:13px;color:#8a6d4d;margin-top:4px"></div>
+      <div id="followScore" style="font-size:14px;font-weight:700;margin-top:4px"></div>
+    </div>
+    <div class="demorow" style="justify-content:center"><button class="smallbtn" id="followSkipBtn" data-i18n="follow_skip">跳过当前音</button></div>
+    <p style="font-size:13px;color:#8a6d4d;margin:8px 0 0" id="followMsg"></p>
+  </div>
+
+  <div class="card">
     <div class="timer">
       <div id="time">00:00</div>
       <div><span id="status" class="nosound" data-i18n="st_idle">未开始</span></div>
@@ -138,7 +152,7 @@
     <b data-i18n="honest_title">v0.1 诚实说明：</b><span data-i18n="honest"> 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。停下后有 15 秒宽限（看谱、摸音都算），15 秒内再弹就接着计，超过 15 秒没声才暂停。麦克风检测只能在真机上测试，无头测试无法验证。</span>
   </div>
 
-  <footer>毛豆琴音 v0.1.10 · <span data-i18n="foot">记录和照片只存在这台设备上（localStorage）</span></footer>
+  <footer>毛豆琴音 v0.1.11 · <span data-i18n="foot">记录和照片只存在这台设备上（localStorage）</span></footer>
 </div>
 <div id="lightbox"><img id="lightboxImg" alt=""><div data-i18n="score_close">点一下关闭</div></div>
 
@@ -157,6 +171,7 @@ const I18N = {
     score:'乐谱照片', score_tip:'给当前孩子贴一张乐谱照片，练琴时放在旁边看。照片只存在这台设备上，不上传服务器。照片不会自动识别成音符：对照照片，在下面的示范弹奏里手动输入音符序列再听。如果图库打不开，点“拍照”直接拍，或先把图存到文件再选。', score_add:'＋ 添加照片', score_camera:'📷 拍照', score_none:'还没有乐谱照片', score_del_q:'删除这张乐谱照片吗？', score_full:'这个孩子的照片已满 30 张，先删一张再添加。', score_big:'照片太大，保存失败。换张小一点的照片再试。', score_close:'点一下关闭',
     piece:'曲目库', piece_tip:'先选一首曲子再开始练琴：选中的曲子只显示它自己的乐谱照片，选中的状态下新加的照片会自动归到这首曲子。', piece_add:'＋ 新建曲子', piece_del:'删除曲子', piece_name_ph:'曲子名字，如：小星星', piece_none_sel:'不选曲子（显示全部照片）', piece_empty:'还没有曲子，先在上面起个名字新建一首。', piece_dup:'这个孩子已经有同名曲子了。', piece_del_q:'删除这首曲子吗？照片会保留，不选曲子时还能看到。', piece_count:'这首曲子有 {n} 张乐谱照片。', piece_nophoto:'这首曲子还没有乐谱照片，在下面加一张就会归到它。',
     demo:'示范弹奏', demo_tip:'手动输入一串音符，点播放就能听到示范。格式：音名 + 八度，冒号后跟拍数，如 C4:1；R 表示休止，如 R:1；不写拍数默认 1 拍。不连任何识别功能，示范只弹你输入的音符。校对好的音符可保存到当前曲子，下次直接载入；分段只播其中一段，循环可反复播，慢速（0.5×）适合跟弹。', demo_ph:'如：C4:1 C4:1 G4:1 G4:1 A4:1 A4:1 G4:2', demo_example:'填入示例', demo_play:'▶ 播放示范', demo_stop:'■ 停止', demo_speed:'速度', demo_empty:'先输入至少一个音符再播放。', demo_invalid:'跳过了无效的输入：', demo_playing:'正在示范：', demo_done:'示范播完了', demo_section:'分段', demo_from:'从第', demo_from_unit:'个音', demo_to:'到第', demo_to_unit:'个音', demo_all_hint:'留空 = 整首', demo_loop:'循环播放', demo_save:'保存到当前曲子', demo_load:'载入曲子的示范', demo_nopiece:'先在曲目库选一首曲子。', demo_saved:'已保存到这首曲子。', demo_noload:'这首曲子还没有保存的示范音符。', demo_loaded:'已载入这首曲子的示范音符。', demo_range_bad:'分段范围不对：从第 1 个音开始，不能超过总音数，起始不能大于结束。', demo_piece_none:'未选曲子：先在曲目库选一首曲子，才能保存或载入示范。', demo_piece_has:'这首曲子已保存示范（{n} 个音），点“载入曲子的示范”可填回。', demo_piece_no:'这首曲子还没有保存的示范，上面输入音符后点“保存到当前曲子”。',
+    follow:'对照练习', follow_tip:'对照当前曲子保存的示范音符逐音练习：弹对当前音就变绿前进，弹错变红停在原地重试。先在曲目库选曲子并保存示范音符，再点开始练琴，弹琴时对照自动进行。', follow_start:'▶ 开始对照', follow_stop:'■ 停止对照', follow_skip:'跳过当前音', follow_expected:'当前应弹', follow_played:'你弹了', follow_progress:'第 {i} / {n} 个音', follow_score:'对 {ok} 个 · 错 {bad} 个', follow_done:'对照完成！', follow_wrong:'弹错了，再试一次这个音。', follow_noseq:'这首曲子还没有保存的示范音符：先在示范弹奏里输入音符并点“保存到当前曲子”。',
     foot:'记录和照片只存在这台设备上（localStorage）'
   },
   en: {
@@ -172,6 +187,7 @@ const I18N = {
     score:'Score photos', score_tip:'Add a photo of the score for this child, to keep beside the timer while practicing. Photos stay on this device only and are never uploaded. Photos are not auto-recognized into notes: read the photo and type the notes by hand in Demo playback below, then listen. If the photo library will not load, tap Take photo instead, or save the image to Files first.', score_add:'＋ Add photo', score_camera:'📷 Take photo', score_none:'No score photos yet', score_del_q:'Delete this score photo?', score_full:'This child already has 30 photos. Delete one first.', score_big:'Photo too large to save. Try a smaller photo.', score_close:'Tap to close',
     piece:'Pieces', piece_tip:'Pick a piece before you start: the selected piece shows only its own score photos, and a photo added while it is selected is filed under it.', piece_add:'＋ New piece', piece_del:'Delete piece', piece_name_ph:'Piece name, e.g. Twinkle Twinkle', piece_none_sel:'No piece selected (show all photos)', piece_empty:'No pieces yet. Name one above to create it.', piece_dup:'This child already has a piece with that name.', piece_del_q:'Delete this piece? Its photos stay and show again when no piece is selected.', piece_count:'This piece has {n} score photo(s).', piece_nophoto:'This piece has no score photos yet. Add one below and it will be filed under it.',
     demo:'Demo playback', demo_tip:'Type notes by hand and press play to hear a demo. Format: note name + octave, colon + beats, e.g. C4:1; R means rest, e.g. R:1; beats default to 1. No recognition is involved: the demo only plays the notes you typed. A proofread sequence can be saved to the current piece and loaded back later; a section plays only part of it, loop repeats it, and 0.5× slow speed suits playing along.', demo_ph:'e.g. C4:1 C4:1 G4:1 G4:1 A4:1 A4:1 G4:2', demo_example:'Fill example', demo_play:'▶ Play demo', demo_stop:'■ Stop', demo_speed:'Speed', demo_empty:'Type at least one note first.', demo_invalid:'Skipped invalid input: ', demo_playing:'Playing demo: ', demo_done:'Demo finished', demo_section:'Section', demo_from:'From note', demo_from_unit:'', demo_to:'to note', demo_to_unit:'', demo_all_hint:'blank = whole piece', demo_loop:'Loop', demo_save:'Save to current piece', demo_load:'Load piece demo', demo_nopiece:'Pick a piece in Pieces first.', demo_saved:'Saved to this piece.', demo_noload:'This piece has no saved demo notes yet.', demo_loaded:'Loaded this piece\u2019s demo notes.', demo_range_bad:'Bad section range: start from note 1, no further than the last note, and start no later than end.', demo_piece_none:'No piece selected: pick a piece in Pieces to save or load a demo.', demo_piece_has:'This piece has a saved demo ({n} notes); press Load piece demo to fill it in.', demo_piece_no:'This piece has no saved demo yet; type notes above and press Save to current piece.',
+    follow:'Follow-along practice', follow_tip:'Practice note by note against this piece\u2019s saved demo notes: a correct note turns green and moves on, a wrong note turns red and stays for another try. Pick a piece in Pieces and save its demo notes first, then press Start practice \u2014 follow-along runs automatically while you play.', follow_start:'▶ Start follow-along', follow_stop:'■ Stop follow-along', follow_skip:'Skip this note', follow_expected:'Now play', follow_played:'You played', follow_progress:'Note {i} / {n}', follow_score:'Correct {ok} · Wrong {bad}', follow_done:'Follow-along complete!', follow_wrong:'Wrong note \u2014 try this one again.', follow_noseq:'This piece has no saved demo notes yet: type notes in Demo playback and press Save to current piece first.',
     foot:'Records and photos stay on this device only (localStorage)'
   }
 };
@@ -181,7 +197,7 @@ function applyLang(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{ el.placeholder = t(el.getAttribute('data-i18n-placeholder')); });
   document.getElementById('langBtn').textContent = lang === 'zh' ? 'EN' : '中文';
-  renderHistory(); updateSensLabel(); updateToday(); renderPieces(); renderScorePhotos();
+  renderHistory(); updateSensLabel(); updateToday(); renderPieces(); renderScorePhotos(); renderFollow();
 }
 document.getElementById('langBtn').onclick = ()=>{
   lang = lang === 'zh' ? 'en' : 'zh';
@@ -738,6 +754,81 @@ document.getElementById('demoSpeed').oninput = ()=>{
   if(label) label.textContent = (document.getElementById('demoSpeed').value || '1') + '×';
 };
 
+// ---- 对照练习 v0.1.11：按校对音符序列逐音对照 ----
+// 参考序列 = 当前曲子保存的 demoSeq 解析后的非休止音（休止是停顿，不用弹）。
+// 比较用的音名由 midi 转回（NOTE_NAMES 的升号写法），与 freqToNote 的输出完全
+// 一致，所以 Db4 这类降号写法也会先转成 C#4 再比。弹对前进、弹错停在原地
+// 重试、跳过不计对错；错音提示与改正意见是下一项，不在这里做。
+function followNoteNames(notes){
+  return (notes || []).filter(n => !n.rest).map(n => NOTE_NAMES[((n.midi % 12) + 12) % 12] + (Math.floor(n.midi / 12) - 1));
+}
+function createFollowState(names){
+  const list = (names || []).slice();
+  return { names: list, idx: 0, correct: 0, wrong: 0, last: null, done: list.length === 0 };
+}
+function followFeed(state, played){
+  if(!state || state.done || !state.names.length) return { matched: false, expected: null, played: played, done: !!(state && state.done) };
+  const expected = state.names[state.idx];
+  if(played === expected){
+    state.correct++; state.idx++; state.last = 'ok';
+    if(state.idx >= state.names.length) state.done = true;
+    return { matched: true, expected: expected, played: played, done: state.done };
+  }
+  state.wrong++; state.last = 'bad';
+  return { matched: false, expected: expected, played: played, done: false };
+}
+function followSkip(state){
+  if(!state || state.done || !state.names.length) return false;
+  state.idx++; state.last = 'skip';
+  if(state.idx >= state.names.length) state.done = true;
+  return true;
+}
+let followActive = false, followState = null, followLastFed = null;
+function renderFollow(){
+  const expEl = document.getElementById('followExpected');
+  const playedEl = document.getElementById('followPlayed');
+  const progEl = document.getElementById('followProgress');
+  const scoreEl = document.getElementById('followScore');
+  const msgEl = document.getElementById('followMsg');
+  if(!expEl) return;
+  if(!followActive || !followState){
+    expEl.textContent = t('note_none'); expEl.style.color = '';
+    if(playedEl) playedEl.textContent = t('note_none');
+    if(progEl) progEl.textContent = '';
+    if(scoreEl) scoreEl.textContent = '';
+    if(msgEl) msgEl.textContent = '';
+    return;
+  }
+  const st = followState;
+  if(st.done){
+    expEl.textContent = '✓'; expEl.style.color = '#1e6b2e';
+    if(msgEl) msgEl.textContent = t('follow_done');
+  } else {
+    expEl.textContent = st.names[st.idx];
+    expEl.style.color = st.last === 'bad' ? '#8a2b12' : (st.last === 'ok' ? '#1e6b2e' : '');
+    if(msgEl) msgEl.textContent = st.last === 'bad' ? t('follow_wrong') : '';
+  }
+  const shown = st.done ? st.names.length : st.idx + 1;
+  if(progEl) progEl.textContent = t('follow_progress').replace('{i}', shown).replace('{n}', st.names.length);
+  if(scoreEl) scoreEl.textContent = t('follow_score').replace('{ok}', st.correct).replace('{bad}', st.wrong);
+}
+document.getElementById('followStartBtn').onclick = ()=>{
+  const piece = getCurrentPiece();
+  if(!piece){ alert(t('demo_nopiece')); return; }
+  const names = followNoteNames(parseDemoSequence(getPieceDemoSeq(piece)).notes);
+  if(!names.length){ alert(t('follow_noseq')); return; }
+  followState = createFollowState(names);
+  followActive = true; followLastFed = null;
+  renderFollow();
+};
+document.getElementById('followStopBtn').onclick = ()=>{
+  followActive = false; followState = null; followLastFed = null;
+  renderFollow();
+};
+document.getElementById('followSkipBtn').onclick = ()=>{
+  if(followActive && followState){ followSkip(followState); renderFollow(); }
+};
+
 // ---- pitch detection (autocorrelation) ----
 const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 function freqToNote(f){
@@ -813,6 +904,13 @@ function tick(){
     setStatus('st_playing','playing');
     document.getElementById('noteName').textContent = freqToNote(det.freq);
     document.getElementById('noteFreq').textContent = Math.round(det.freq) + ' ' + t('hz');
+    if(followActive && followState){
+      const played = freqToNote(det.freq);
+      const playedEl = document.getElementById('followPlayed');
+      if(playedEl) playedEl.textContent = played;
+      // 同一个按住的音只喂一次：音名变化才算新弹了一个音
+      if(played !== followLastFed){ followLastFed = played; followFeed(followState, played); renderFollow(); }
+    }
   } else if(now - lastValid < GRACE_MS && lastValid>0){
     effectiveMs += delta;
     setStatus('st_grace','grace');
@@ -821,10 +919,12 @@ function tick(){
     setStatus('st_noise','noise');
     document.getElementById('noteName').textContent = t('note_none');
     document.getElementById('noteFreq').textContent = '';
+    followLastFed = null;
   } else {
     setStatus('st_nosound','nosound');
     document.getElementById('noteName').textContent = t('note_none');
     document.getElementById('noteFreq').textContent = '';
+    followLastFed = null;
   }
   document.getElementById('time').textContent = fmt(effectiveMs);
 }
