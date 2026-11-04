@@ -120,6 +120,7 @@
     <p style="font-size:13px;color:#8a6d4d;margin:8px 0 0;line-height:1.6" data-i18n="metro_tip">节拍器是练琴的拍子基准：先定好速度再跟弹，下一版才能据此判断抢拍还是拖拍。第一拍声音高一点、数字变绿。</p>
     <p style="font-size:13px;color:#8a6d4d;margin:8px 0 0" id="followMsg"></p>
     <p style="font-size:13px;color:#1e6b2e;margin:8px 0 0;font-weight:700" id="followAdvice"></p>
+    <p style="font-size:13px;color:#7a5a00;margin:8px 0 0" id="followRhythm"></p>
   </div>
 
   <div class="card">
@@ -155,7 +156,7 @@
     <b data-i18n="honest_title">v0.1 诚实说明：</b><span data-i18n="honest"> 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。停下后有 15 秒宽限（看谱、摸音都算），15 秒内再弹就接着计，超过 15 秒没声才暂停。麦克风检测只能在真机上测试，无头测试无法验证。</span>
   </div>
 
-  <footer>毛豆琴音 v0.1.14 · <span data-i18n="foot">记录和照片只存在这台设备上（localStorage）</span></footer>
+  <footer>毛豆琴音 v0.1.15 · <span data-i18n="foot">记录和照片只存在这台设备上（localStorage）</span></footer>
 </div>
 <div id="lightbox"><img id="lightboxImg" alt=""><div data-i18n="score_close">点一下关闭</div></div>
 
@@ -174,7 +175,7 @@ const I18N = {
     score:'乐谱照片', score_tip:'给当前孩子贴一张乐谱照片，练琴时放在旁边看。照片只存在这台设备上，不上传服务器。照片不会自动识别成音符：对照照片，在下面的示范弹奏里手动输入音符序列再听。如果图库打不开，点“拍照”直接拍，或先把图存到文件再选。', score_add:'＋ 添加照片', score_camera:'📷 拍照', score_none:'还没有乐谱照片', score_del_q:'删除这张乐谱照片吗？', score_full:'这个孩子的照片已满 30 张，先删一张再添加。', score_big:'照片太大，保存失败。换张小一点的照片再试。', score_close:'点一下关闭',
     piece:'曲目库', piece_tip:'先选一首曲子再开始练琴：选中的曲子只显示它自己的乐谱照片，选中的状态下新加的照片会自动归到这首曲子。', piece_add:'＋ 新建曲子', piece_del:'删除曲子', piece_name_ph:'曲子名字，如：小星星', piece_none_sel:'不选曲子（显示全部照片）', piece_empty:'还没有曲子，先在上面起个名字新建一首。', piece_dup:'这个孩子已经有同名曲子了。', piece_del_q:'删除这首曲子吗？照片会保留，不选曲子时还能看到。', piece_count:'这首曲子有 {n} 张乐谱照片。', piece_nophoto:'这首曲子还没有乐谱照片，在下面加一张就会归到它。',
     demo:'示范弹奏', demo_tip:'手动输入一串音符，点播放就能听到示范。格式：音名 + 八度，冒号后跟拍数，如 C4:1；R 表示休止，如 R:1；不写拍数默认 1 拍。不连任何识别功能，示范只弹你输入的音符。校对好的音符可保存到当前曲子，下次直接载入；分段只播其中一段，循环可反复播，慢速（0.5×）适合跟弹。', demo_ph:'如：C4:1 C4:1 G4:1 G4:1 A4:1 A4:1 G4:2', demo_example:'填入示例', demo_play:'▶ 播放示范', demo_stop:'■ 停止', demo_speed:'速度', demo_empty:'先输入至少一个音符再播放。', demo_invalid:'跳过了无效的输入：', demo_playing:'正在示范：', demo_done:'示范播完了', demo_section:'分段', demo_from:'从第', demo_from_unit:'个音', demo_to:'到第', demo_to_unit:'个音', demo_all_hint:'留空 = 整首', demo_loop:'循环播放', demo_save:'保存到当前曲子', demo_load:'载入曲子的示范', demo_nopiece:'先在曲目库选一首曲子。', demo_saved:'已保存到这首曲子。', demo_noload:'这首曲子还没有保存的示范音符。', demo_loaded:'已载入这首曲子的示范音符。', demo_range_bad:'分段范围不对：从第 1 个音开始，不能超过总音数，起始不能大于结束。', demo_piece_none:'未选曲子：先在曲目库选一首曲子，才能保存或载入示范。', demo_piece_has:'这首曲子已保存示范（{n} 个音），点“载入曲子的示范”可填回。', demo_piece_no:'这首曲子还没有保存的示范，上面输入音符后点“保存到当前曲子”。',
-    follow:'对照练习', follow_tip:'对照当前曲子保存的示范音符逐音练习：弹对当前音就变绿前进，弹错变红停在原地重试，并提示应弹哪个音、你弹了哪个音、高了或低了几个半音，再给一句话改正意见，点“听正确音”可听一遍正确音，计时不受影响。先在曲目库选曲子并保存示范音符，再点开始练琴，弹琴时对照自动进行。', follow_start:'▶ 开始对照', follow_stop:'■ 停止对照', follow_skip:'跳过当前音', follow_listen:'🔊 听正确音', follow_expected:'当前应弹', follow_played:'你弹了', follow_progress:'第 {i} / {n} 个音', follow_score:'对 {ok} 个 · 错 {bad} 个', follow_done:'对照完成！', follow_wrong:'弹错了，再试一次这个音。', follow_hint:'应弹 {expected}，你弹了 {played}，{dir} {n} 个半音，再试一次这个音。', follow_dir_high:'高了', follow_dir_low:'低了', follow_noseq:'这首曲子还没有保存的示范音符：先在示范弹奏里输入音符并点“保存到当前曲子”。', follow_adv_high:'偏高了：手指往左移 {n} 个半音，再弹一次这个音。', follow_adv_low:'偏低了：手指往右移 {n} 个半音，再弹一次这个音。', follow_adv_same:'音高是对的，再对照乐谱弹一次这个音。', follow_adv_repeat:'这个音连续错了 {n} 次：先点“听正确音”听一遍，再慢慢弹。', follow_adv_skipped:'跳过了 {note}：先听一遍正确音，再回头练这个音。', metro:'节拍器', metro_start:'▶ 节拍器', metro_stop:'■ 停节拍器', metro_tip:'节拍器是练琴的拍子基准：先定好速度再跟弹，下一版才能据此判断抢拍还是拖拍。第一拍声音高一点、数字变绿。',
+    follow:'对照练习', follow_tip:'对照当前曲子保存的示范音符逐音练习：弹对当前音就变绿前进，弹错变红停在原地重试，并提示应弹哪个音、你弹了哪个音、高了或低了几个半音，再给一句话改正意见，点“听正确音”可听一遍正确音，计时不受影响。开着节拍器跟弹时，还会按第一个弹对的音对齐估算抢拍/拖拍，只作参考，不计入对错。先在曲目库选曲子并保存示范音符，再点开始练琴，弹琴时对照自动进行。', follow_start:'▶ 开始对照', follow_stop:'■ 停止对照', follow_skip:'跳过当前音', follow_listen:'🔊 听正确音', follow_expected:'当前应弹', follow_played:'你弹了', follow_progress:'第 {i} / {n} 个音', follow_score:'对 {ok} 个 · 错 {bad} 个', follow_done:'对照完成！', follow_wrong:'弹错了，再试一次这个音。', follow_hint:'应弹 {expected}，你弹了 {played}，{dir} {n} 个半音，再试一次这个音。', follow_dir_high:'高了', follow_dir_low:'低了', follow_noseq:'这首曲子还没有保存的示范音符：先在示范弹奏里输入音符并点“保存到当前曲子”。', follow_adv_high:'偏高了：手指往左移 {n} 个半音，再弹一次这个音。', follow_adv_low:'偏低了：手指往右移 {n} 个半音，再弹一次这个音。', follow_adv_same:'音高是对的，再对照乐谱弹一次这个音。', follow_adv_repeat:'这个音连续错了 {n} 次：先点“听正确音”听一遍，再慢慢弹。', follow_adv_skipped:'跳过了 {note}：先听一遍正确音，再回头练这个音。', follow_rhythm_rush:'节奏抢了：比拍子早了约 {ms} 毫秒，下一音等一拍再弹。', follow_rhythm_drag:'节奏拖了：比拍子晚了约 {ms} 毫秒，下一音跟紧拍子。', follow_rhythm_ok:'节奏合拍，继续保持。', metro:'节拍器', metro_start:'▶ 节拍器', metro_stop:'■ 停节拍器', metro_tip:'节拍器是练琴的拍子基准：开着节拍器跟弹时，会按第一个弹对的音对齐，估算后面每个音抢拍还是拖拍，只作参考，不计入对错。第一拍声音高一点、数字变绿。',
     foot:'记录和照片只存在这台设备上（localStorage）'
   },
   en: {
@@ -190,7 +191,7 @@ const I18N = {
     score:'Score photos', score_tip:'Add a photo of the score for this child, to keep beside the timer while practicing. Photos stay on this device only and are never uploaded. Photos are not auto-recognized into notes: read the photo and type the notes by hand in Demo playback below, then listen. If the photo library will not load, tap Take photo instead, or save the image to Files first.', score_add:'＋ Add photo', score_camera:'📷 Take photo', score_none:'No score photos yet', score_del_q:'Delete this score photo?', score_full:'This child already has 30 photos. Delete one first.', score_big:'Photo too large to save. Try a smaller photo.', score_close:'Tap to close',
     piece:'Pieces', piece_tip:'Pick a piece before you start: the selected piece shows only its own score photos, and a photo added while it is selected is filed under it.', piece_add:'＋ New piece', piece_del:'Delete piece', piece_name_ph:'Piece name, e.g. Twinkle Twinkle', piece_none_sel:'No piece selected (show all photos)', piece_empty:'No pieces yet. Name one above to create it.', piece_dup:'This child already has a piece with that name.', piece_del_q:'Delete this piece? Its photos stay and show again when no piece is selected.', piece_count:'This piece has {n} score photo(s).', piece_nophoto:'This piece has no score photos yet. Add one below and it will be filed under it.',
     demo:'Demo playback', demo_tip:'Type notes by hand and press play to hear a demo. Format: note name + octave, colon + beats, e.g. C4:1; R means rest, e.g. R:1; beats default to 1. No recognition is involved: the demo only plays the notes you typed. A proofread sequence can be saved to the current piece and loaded back later; a section plays only part of it, loop repeats it, and 0.5× slow speed suits playing along.', demo_ph:'e.g. C4:1 C4:1 G4:1 G4:1 A4:1 A4:1 G4:2', demo_example:'Fill example', demo_play:'▶ Play demo', demo_stop:'■ Stop', demo_speed:'Speed', demo_empty:'Type at least one note first.', demo_invalid:'Skipped invalid input: ', demo_playing:'Playing demo: ', demo_done:'Demo finished', demo_section:'Section', demo_from:'From note', demo_from_unit:'', demo_to:'to note', demo_to_unit:'', demo_all_hint:'blank = whole piece', demo_loop:'Loop', demo_save:'Save to current piece', demo_load:'Load piece demo', demo_nopiece:'Pick a piece in Pieces first.', demo_saved:'Saved to this piece.', demo_noload:'This piece has no saved demo notes yet.', demo_loaded:'Loaded this piece\u2019s demo notes.', demo_range_bad:'Bad section range: start from note 1, no further than the last note, and start no later than end.', demo_piece_none:'No piece selected: pick a piece in Pieces to save or load a demo.', demo_piece_has:'This piece has a saved demo ({n} notes); press Load piece demo to fill it in.', demo_piece_no:'This piece has no saved demo yet; type notes above and press Save to current piece.',
-    follow:'Follow-along practice', follow_tip:'Practice note by note against this piece\u2019s saved demo notes: a correct note turns green and moves on, a wrong note turns red and stays for another try, and shows which note was expected, which note you played, and how many semitones too high or low, plus a one-line tip on how to fix it \u2014 tap “Hear correct note” to hear the right note \u2014 without interrupting the timer. Pick a piece in Pieces and save its demo notes first, then press Start practice \u2014 follow-along runs automatically while you play.', follow_start:'▶ Start follow-along', follow_stop:'■ Stop follow-along', follow_skip:'Skip this note', follow_listen:'🔊 Hear correct note', follow_expected:'Now play', follow_played:'You played', follow_progress:'Note {i} / {n}', follow_score:'Correct {ok} · Wrong {bad}', follow_done:'Follow-along complete!', follow_wrong:'Wrong note \u2014 try this one again.', follow_hint:'Expected {expected}, you played {played}, {n} {semi} too {dir} \u2014 try this note again.', follow_dir_high:'high', follow_dir_low:'low', follow_noseq:'This piece has no saved demo notes yet: type notes in Demo playback and press Save to current piece first.', follow_adv_high:'Too high: move {n} {semi} left and try this note again.', follow_adv_low:'Too low: move {n} {semi} right and try this note again.', follow_adv_same:'The pitch is right \u2014 check the score and play this note once more.', follow_adv_repeat:'Wrong on this note {n} times in a row: tap “Hear correct note” first, then play it slowly.', follow_adv_skipped:'Skipped {note}: hear the correct note first, then come back to it.', metro:'Metronome', metro_start:'▶ Metronome', metro_stop:'■ Stop metronome', metro_tip:'The metronome is the beat reference for practice: set the tempo first, then follow along — the next version can use it to tell rushing from dragging. Beat 1 sounds higher and turns green.',
+    follow:'Follow-along practice', follow_tip:'Practice note by note against this piece\u2019s saved demo notes: a correct note turns green and moves on, a wrong note turns red and stays for another try, and shows which note was expected, which note you played, and how many semitones too high or low, plus a one-line tip on how to fix it \u2014 tap “Hear correct note” to hear the right note \u2014 without interrupting the timer. With the metronome on, it also lines up on the first correct note and estimates rushing or dragging — for reference only, never counted right or wrong. Pick a piece in Pieces and save its demo notes first, then press Start practice \u2014 follow-along runs automatically while you play.', follow_start:'▶ Start follow-along', follow_stop:'■ Stop follow-along', follow_skip:'Skip this note', follow_listen:'🔊 Hear correct note', follow_expected:'Now play', follow_played:'You played', follow_progress:'Note {i} / {n}', follow_score:'Correct {ok} · Wrong {bad}', follow_done:'Follow-along complete!', follow_wrong:'Wrong note \u2014 try this one again.', follow_hint:'Expected {expected}, you played {played}, {n} {semi} too {dir} \u2014 try this note again.', follow_dir_high:'high', follow_dir_low:'low', follow_noseq:'This piece has no saved demo notes yet: type notes in Demo playback and press Save to current piece first.', follow_adv_high:'Too high: move {n} {semi} left and try this note again.', follow_adv_low:'Too low: move {n} {semi} right and try this note again.', follow_adv_same:'The pitch is right \u2014 check the score and play this note once more.', follow_adv_repeat:'Wrong on this note {n} times in a row: tap “Hear correct note” first, then play it slowly.', follow_adv_skipped:'Skipped {note}: hear the correct note first, then come back to it.', follow_rhythm_rush:'Rushing: about {ms} ms ahead of the beat — wait for the beat on the next note.', follow_rhythm_drag:'Dragging: about {ms} ms behind the beat — catch up with the beat on the next note.', follow_rhythm_ok:'Right on the beat — keep it up.', metro:'Metronome', metro_start:'▶ Metronome', metro_stop:'■ Stop metronome', metro_tip:'The metronome is the beat reference for practice: with it on, follow-along lines up on the first correct note and estimates rushing or dragging for later notes — for reference only, never counted right or wrong. Beat 1 sounds higher and turns green.',
     foot:'Records and photos stay on this device only (localStorage)'
   }
 };
@@ -765,8 +766,13 @@ document.getElementById('demoSpeed').oninput = ()=>{
 // 正确音（Web Audio 三角波单音，与示范音色一致）。只改对照卡片文案与
 // 播放，不碰计时。节奏抢/拖未做：对照练习没有节拍基准（练琴速度自由，
 // 示范速度只管播放），按固定拍长判抢/拖会误判，留待有节拍基准后再做。
-// v0.1.14 已补节拍器（BPM 40–208、4/4、第一拍加重）作拍子基准，
-// 节奏抢/拖判断仍是下一项，不在本版判。
+// v0.1.14 已补节拍器（BPM 40–208、4/4、第一拍加重）作拍子基准。
+// v0.1.15 节奏抢/拖建议：节拍器开着时才估算——以第一个弹对的音为
+// 对齐锚点，后面每个弹对音的应到时间 = 锚点 + 已完成音的拍数 × 拍长
+// （拍数取自示范序列，休止不计）；早于容差 = 抢拍，晚于容差 = 拖拍。
+// 容差 = max(200ms, 拍长×0.3)，检测约 100ms 一跳，容差留得宽，只作
+// 参考提示，不计入对错、不碰计时；节拍器关着、换速度、跳过音时都
+// 重新锚定或不判，避免把看谱停顿误判成拖拍。
 // 参考序列 = 当前曲子保存的 demoSeq 解析后的非休止音（休止是停顿，不用弹）。
 // 比较用的音名由 midi 转回（NOTE_NAMES 的升号写法），与 freqToNote 的输出完全
 // 一致，所以 Db4 这类降号写法也会先转成 C#4 再比。弹对前进、弹错停在原地
@@ -787,17 +793,66 @@ function followHintText(expected, played, diff){
 function followNoteNames(notes){
   return (notes || []).filter(n => !n.rest).map(n => NOTE_NAMES[((n.midi % 12) + 12) % 12] + (Math.floor(n.midi / 12) - 1));
 }
-function createFollowState(names){
-  const list = (names || []).slice();
-  return { names: list, idx: 0, correct: 0, wrong: 0, last: null, lastWrong: null, wrongStreak: 0, lastSkipped: null, done: list.length === 0 };
+function followNoteBeats(notes){
+  return (notes || []).filter(n => !n.rest).map(n => n.beats || 1);
 }
-function followFeed(state, played){
+function rhythmToleranceMs(beatMs){
+  const b = Number(beatMs) || 1000;
+  return Math.max(200, Math.round(b * 0.3));
+}
+function classifyRhythm(actualMs, expectedMs, beatMs){
+  const diff = (actualMs || 0) - (expectedMs || 0);
+  const tol = rhythmToleranceMs(beatMs);
+  if(diff < -tol) return { verdict: 'rush', diffMs: diff, toleranceMs: tol };
+  if(diff > tol) return { verdict: 'drag', diffMs: diff, toleranceMs: tol };
+  return { verdict: 'ok', diffMs: diff, toleranceMs: tol };
+}
+function rhythmAdviceText(verdict, diffMs){
+  if(verdict === 'rush') return t('follow_rhythm_rush').replace('{ms}', Math.round(Math.abs(diffMs || 0)));
+  if(verdict === 'drag') return t('follow_rhythm_drag').replace('{ms}', Math.round(Math.abs(diffMs || 0)));
+  if(verdict === 'ok') return t('follow_rhythm_ok');
+  return '';
+}
+function resetRhythmAnchor(state){
+  if(!state) return;
+  state.rhythmAnchorAt = null; state.rhythmBpm = null; state.rhythmExpectedBeats = 0;
+  state.lastRhythm = null; state.lastRhythmDiffMs = null;
+}
+function createFollowState(names, beats){
+  const list = (names || []).slice();
+  const beatList = (Array.isArray(beats) && beats.length === list.length) ? beats.slice() : list.map(() => 1);
+  return { names: list, beats: beatList, idx: 0, correct: 0, wrong: 0, last: null, lastWrong: null, wrongStreak: 0, lastSkipped: null, done: list.length === 0,
+    rhythmAnchorAt: null, rhythmBpm: null, rhythmExpectedBeats: 0, rhythmRush: 0, rhythmDrag: 0, rhythmOnbeat: 0, lastRhythm: null, lastRhythmDiffMs: null };
+}
+function followFeed(state, played, nowMs, bpm){
   if(!state || state.done || !state.names.length) return { matched: false, expected: null, played: played, done: !!(state && state.done) };
   const expected = state.names[state.idx];
   if(played === expected){
+    const completedIdx = state.idx;
+    const completedBeats = (state.beats && state.beats[completedIdx]) || 1;
+    let rhythm = null;
+    if(typeof bpm === 'number' && bpm > 0 && typeof nowMs === 'number'){
+      const beatMs = 60000 / bpm;
+      if(state.rhythmAnchorAt === null){
+        state.rhythmAnchorAt = nowMs; state.rhythmBpm = bpm; state.rhythmExpectedBeats = completedBeats;
+      } else if(state.rhythmBpm !== bpm){
+        state.rhythmAnchorAt = nowMs; state.rhythmBpm = bpm; state.rhythmExpectedBeats = completedBeats;
+        state.lastRhythm = null; state.lastRhythmDiffMs = null;
+      } else {
+        const expectedMs = (state.rhythmExpectedBeats || 0) * beatMs;
+        rhythm = classifyRhythm(nowMs - state.rhythmAnchorAt, expectedMs, beatMs);
+        state.lastRhythm = rhythm.verdict; state.lastRhythmDiffMs = rhythm.diffMs;
+        if(rhythm.verdict === 'rush') state.rhythmRush = (state.rhythmRush || 0) + 1;
+        else if(rhythm.verdict === 'drag') state.rhythmDrag = (state.rhythmDrag || 0) + 1;
+        else state.rhythmOnbeat = (state.rhythmOnbeat || 0) + 1;
+        state.rhythmExpectedBeats = (state.rhythmExpectedBeats || 0) + completedBeats;
+      }
+    } else if(typeof bpm !== 'number' || !(bpm > 0)){
+      resetRhythmAnchor(state);
+    }
     state.correct++; state.idx++; state.last = 'ok'; state.lastWrong = null; state.wrongStreak = 0; state.lastSkipped = null;
     if(state.idx >= state.names.length) state.done = true;
-    return { matched: true, expected: expected, played: played, done: state.done };
+    return { matched: true, expected: expected, played: played, done: state.done, rhythm: rhythm };
   }
   state.wrong++; state.last = 'bad'; state.wrongStreak = (state.wrongStreak || 0) + 1; state.lastSkipped = null;
   const em = noteToMidi(expected), pm = noteToMidi(played);
@@ -809,6 +864,7 @@ function followSkip(state){
   if(!state || state.done || !state.names.length) return false;
   state.lastSkipped = state.names[state.idx];
   state.idx++; state.last = 'skip'; state.lastWrong = null; state.wrongStreak = 0;
+  resetRhythmAnchor(state);
   if(state.idx >= state.names.length) state.done = true;
   return true;
 }
@@ -872,6 +928,7 @@ function renderFollow(){
   const scoreEl = document.getElementById('followScore');
   const msgEl = document.getElementById('followMsg');
   const advEl = document.getElementById('followAdvice');
+  const rhythmEl = document.getElementById('followRhythm');
   const listenBtn = document.getElementById('followListenBtn');
   if(!expEl) return;
   if(!followActive || !followState){
@@ -881,6 +938,7 @@ function renderFollow(){
     if(scoreEl) scoreEl.textContent = '';
     if(msgEl) msgEl.textContent = '';
     if(advEl) advEl.textContent = '';
+    if(rhythmEl) rhythmEl.textContent = '';
     if(listenBtn) listenBtn.disabled = true;
     return;
   }
@@ -889,11 +947,13 @@ function renderFollow(){
     expEl.textContent = '✓'; expEl.style.color = '#1e6b2e';
     if(msgEl) msgEl.textContent = t('follow_done');
     if(advEl) advEl.textContent = '';
+    if(rhythmEl) rhythmEl.textContent = '';
   } else {
     expEl.textContent = st.names[st.idx];
     expEl.style.color = st.last === 'bad' ? '#8a2b12' : (st.last === 'ok' ? '#1e6b2e' : '');
     if(msgEl) msgEl.textContent = st.last === 'bad' ? (st.lastWrong && st.lastWrong.diff !== null && st.lastWrong.diff !== 0 ? followHintText(st.lastWrong.expected, st.lastWrong.played, st.lastWrong.diff) : t('follow_wrong')) : '';
     if(advEl) advEl.textContent = followAdviceText(followAdvice(st));
+    if(rhythmEl) rhythmEl.textContent = (st.last === 'ok' && (st.lastRhythm === 'rush' || st.lastRhythm === 'drag')) ? rhythmAdviceText(st.lastRhythm, st.lastRhythmDiffMs) : '';
   }
   if(listenBtn) listenBtn.disabled = !followAdviceNote(st);
   const shown = st.done ? st.names.length : st.idx + 1;
@@ -903,9 +963,10 @@ function renderFollow(){
 document.getElementById('followStartBtn').onclick = ()=>{
   const piece = getCurrentPiece();
   if(!piece){ alert(t('demo_nopiece')); return; }
-  const names = followNoteNames(parseDemoSequence(getPieceDemoSeq(piece)).notes);
+  const parsedSeq = parseDemoSequence(getPieceDemoSeq(piece)).notes;
+  const names = followNoteNames(parsedSeq);
   if(!names.length){ alert(t('follow_noseq')); return; }
-  followState = createFollowState(names);
+  followState = createFollowState(names, followNoteBeats(parsedSeq));
   followActive = true; followLastFed = null;
   renderFollow();
 };
@@ -920,9 +981,10 @@ document.getElementById('followListenBtn').onclick = ()=>{
   playFollowAdviceNote();
 };
 
-// ---- 节拍器 v0.1.14：对照练习的拍子基准（节奏抢/拖判断的前提） ----
-// 只提供稳定拍点，不判抢/拖、不碰计时：BPM 滑杆 40–208，4/4 循环，
+// ---- 节拍器 v0.1.14：对照练习的拍子基准 ----
+// 只提供稳定拍点，不碰计时：BPM 滑杆 40–208，4/4 循环，
 // 第一拍高音+绿色、其余拍低音；速度中途改动立即按新间隔重排。
+// v0.1.15 起，对照练习在节拍器开着时用它估算抢拍/拖拍（见 followFeed）。
 // 纯函数（clampBpm / beatIntervalMs / nextMetroBeat）供无头测试。
 const METRO_BPM_MIN = 40, METRO_BPM_MAX = 208, METRO_BPM_DEFAULT = 60;
 function clampBpm(v){
@@ -1065,7 +1127,7 @@ function tick(){
       const playedEl = document.getElementById('followPlayed');
       if(playedEl) playedEl.textContent = played;
       // 同一个按住的音只喂一次：音名变化才算新弹了一个音
-      if(played !== followLastFed){ followLastFed = played; followFeed(followState, played); renderFollow(); }
+      if(played !== followLastFed){ followLastFed = played; followFeed(followState, played, Date.now(), metroRunning ? clampBpm(document.getElementById('metroBpm').value) : null); renderFollow(); }
     }
   } else if(now - lastValid < GRACE_MS && lastValid>0){
     effectiveMs += delta;
