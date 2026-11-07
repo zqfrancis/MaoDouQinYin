@@ -161,7 +161,7 @@
     <b data-i18n="honest_title">v0.1 诚实说明：</b><span data-i18n="honest"> 这是启发式检测（音量 + 基频自相关 + 频谱平坦度），不是小叶子级别的 AI 识别。快速跑动、弹得很轻可能少计；离麦克风很近的大声说话可能误计。停下后有 15 秒宽限（看谱、摸音都算），15 秒内再弹就接着计，超过 15 秒没声才暂停。麦克风检测只能在真机上测试，无头测试无法验证。</span>
   </div>
 
-  <footer>毛豆琴音 v0.1.17 · <span data-i18n="foot">记录和照片只存在这台设备上（localStorage）</span></footer>
+  <footer>毛豆琴音 v0.1.18 · <span data-i18n="foot">记录和照片只存在这台设备上（localStorage）</span></footer>
 </div>
 <div id="lightbox"><img id="lightboxImg" alt=""><div data-i18n="score_close">点一下关闭</div></div>
 
@@ -181,7 +181,7 @@ const I18N = {
     piece:'曲目库', piece_tip:'先选一首曲子再开始练琴：选中的曲子只显示它自己的乐谱照片，选中的状态下新加的照片会自动归到这首曲子。', piece_add:'＋ 新建曲子', piece_del:'删除曲子', piece_name_ph:'曲子名字，如：小星星', piece_none_sel:'不选曲子（显示全部照片）', piece_empty:'还没有曲子，先在上面起个名字新建一首。', piece_dup:'这个孩子已经有同名曲子了。', piece_del_q:'删除这首曲子吗？照片会保留，不选曲子时还能看到。', piece_count:'这首曲子有 {n} 张乐谱照片。', piece_nophoto:'这首曲子还没有乐谱照片，在下面加一张就会归到它。',
     demo:'示范弹奏', demo_tip:'手动输入一串音符，点播放就能听到示范。格式：音名 + 八度，冒号后跟拍数，如 C4:1；R 表示休止，如 R:1；不写拍数默认 1 拍。不连任何识别功能，示范只弹你输入的音符。校对好的音符可保存到当前曲子，下次直接载入；分段只播其中一段，循环可反复播，慢速（0.5×）适合跟弹。', demo_ph:'如：C4:1 C4:1 G4:1 G4:1 A4:1 A4:1 G4:2', demo_example:'填入示例', demo_play:'▶ 播放示范', demo_stop:'■ 停止', demo_speed:'速度', demo_empty:'先输入至少一个音符再播放。', demo_invalid:'跳过了无效的输入：', demo_playing:'正在示范：', demo_done:'示范播完了', demo_section:'分段', demo_from:'从第', demo_from_unit:'个音', demo_to:'到第', demo_to_unit:'个音', demo_all_hint:'留空 = 整首', demo_loop:'循环播放', demo_save:'保存到当前曲子', demo_load:'载入曲子的示范', demo_nopiece:'先在曲目库选一首曲子。', demo_saved:'已保存到这首曲子。', demo_noload:'这首曲子还没有保存的示范音符。', demo_loaded:'已载入这首曲子的示范音符。', demo_range_bad:'分段范围不对：从第 1 个音开始，不能超过总音数，起始不能大于结束。', demo_piece_none:'未选曲子：先在曲目库选一首曲子，才能保存或载入示范。', demo_piece_has:'这首曲子已保存示范（{n} 个音），点“载入曲子的示范”可填回。', demo_piece_no:'这首曲子还没有保存的示范，上面输入音符后点“保存到当前曲子”。',
     follow:'对照练习', follow_tip:'对照当前曲子保存的示范音符逐音练习：弹对当前音就变绿前进，弹错变红停在原地重试，并提示应弹哪个音、你弹了哪个音、高了或低了几个半音，再给一句话改正意见，点“听正确音”可听一遍正确音，计时不受影响。开着节拍器跟弹时，还会按第一个弹对的音对齐估算抢拍/拖拍，只作参考，不计入对错。先在曲目库选曲子并保存示范音符，再点开始练琴，弹琴时对照自动进行。', follow_start:'▶ 开始对照', follow_stop:'■ 停止对照', follow_skip:'跳过当前音', follow_listen:'🔊 听正确音', follow_expected:'当前应弹', follow_played:'你弹了', follow_progress:'第 {i} / {n} 个音', follow_score:'对 {ok} 个 · 错 {bad} 个', follow_done:'对照完成！', follow_wrong:'弹错了，再试一次这个音。', follow_hint:'应弹 {expected}，你弹了 {played}，{dir} {n} 个半音，再试一次这个音。', follow_dir_high:'高了', follow_dir_low:'低了', follow_noseq:'这首曲子还没有保存的示范音符：先在示范弹奏里输入音符并点“保存到当前曲子”。', follow_adv_high:'偏高了：手指往左移 {n} 个半音，再弹一次这个音。', follow_adv_low:'偏低了：手指往右移 {n} 个半音，再弹一次这个音。', follow_adv_same:'音高是对的，再对照乐谱弹一次这个音。', follow_adv_repeat:'这个音连续错了 {n} 次：先点“听正确音”听一遍，再慢慢弹。', follow_adv_skipped:'跳过了 {note}：先听一遍正确音，再回头练这个音。', follow_rhythm_rush:'节奏抢了：比拍子早了约 {ms} 毫秒，下一音等一拍再弹。', follow_rhythm_drag:'节奏拖了：比拍子晚了约 {ms} 毫秒，下一音跟紧拍子。', follow_rhythm_ok:'节奏合拍，继续保持。',
-    report:'练琴报告', report_time:'有效练琴时间', report_piece:'曲子', report_score:'弹对 {ok} 个 · 弹错 {bad} 个 · 跳过 {skip} 个', report_accuracy:'正确率 {n}%', report_topwrong:'常错音', report_topwrong_none:'没有常错音', report_focus:'下次重点练', report_focus_text:'第 {from}–{to} 个音，一共错了 {n} 次', report_topwrong_advice:'常错的音 {notes}，单独多练几遍', report_advice_skipped:'跳过了 {notes}：下次把这几个音单独练一遍', report_rhythm:'节奏：抢 {rush} 次 · 拖 {drag} 次 · 合拍 {ok} 次', report_nofollow:'这次没有对照练习，只记了练琴时间。', report_allok:'全部弹对！下次可以试试更快的速度，或练下一首曲子。', report_empty:'还没有练琴报告：结束一次练琴后，这里会出小结。', report_sep:'；', report_mood:'这次的感觉', report_mood_note:'启发式标签，仅供参考：只按弹的速度、力度、音高起伏和连贯度粗估，不是专业情绪识别。', report_mood_insufficient:'这次弹的音太少，没法给感觉标签：多弹几个音再结束试试。', mood_energetic:'激昂', mood_bright:'明亮', mood_lively:'轻快', mood_gentle:'柔和', mood_calm:'平静', mood_reason_energetic:'弹得快、声音也响', mood_reason_bright:'音高起伏大，弹得比较轻快', mood_reason_lively:'弹得快、声音比较轻', mood_reason_gentle:'弹得慢、声音轻', mood_reason_calm:'节奏稳、起伏不大', metro:'节拍器', metro_start:'▶ 节拍器', metro_stop:'■ 停节拍器', metro_tip:'节拍器是练琴的拍子基准：开着节拍器跟弹时，会按第一个弹对的音对齐，估算后面每个音抢拍还是拖拍，只作参考，不计入对错。第一拍声音高一点、数字变绿。',
+    report:'练琴报告', report_time:'有效练琴时间', report_piece:'曲子', report_score:'弹对 {ok} 个 · 弹错 {bad} 个 · 跳过 {skip} 个', report_accuracy:'正确率 {n}%', report_topwrong:'常错音', report_topwrong_none:'没有常错音', report_focus:'下次重点练', report_focus_text:'第 {from}–{to} 个音，一共错了 {n} 次', report_topwrong_advice:'常错的音 {notes}，单独多练几遍', report_advice_skipped:'跳过了 {notes}：下次把这几个音单独练一遍', report_rhythm:'节奏：抢 {rush} 次 · 拖 {drag} 次 · 合拍 {ok} 次', report_nofollow:'这次没有对照练习，只记了练琴时间。', report_allok:'全部弹对！下次可以试试更快的速度，或练下一首曲子。', report_empty:'还没有练琴报告：结束一次练琴后，这里会出小结。', report_sep:'；', report_mood:'这次的感觉', report_mood_note:'启发式标签，仅供参考：只按弹的速度、力度、音高起伏和连贯度粗估，不是专业情绪识别。', report_mood_insufficient:'这次弹的音太少，没法给感觉标签：多弹几个音再结束试试。', report_mood_compare:'和上次比', report_mood_compare_same:'上次也是 {prev}，这次的感觉和上次一样。', report_mood_compare_stronger:'上次是 {prev}，这次比上次更有力。', report_mood_compare_gentler:'上次是 {prev}，这次比上次更柔和。', report_mood_compare_first:'这是这首曲子第一次有感觉标签，下次练完就能和这次比一比。', mood_energetic:'激昂', mood_bright:'明亮', mood_lively:'轻快', mood_gentle:'柔和', mood_calm:'平静', mood_reason_energetic:'弹得快、声音也响', mood_reason_bright:'音高起伏大，弹得比较轻快', mood_reason_lively:'弹得快、声音比较轻', mood_reason_gentle:'弹得慢、声音轻', mood_reason_calm:'节奏稳、起伏不大', metro:'节拍器', metro_start:'▶ 节拍器', metro_stop:'■ 停节拍器', metro_tip:'节拍器是练琴的拍子基准：开着节拍器跟弹时，会按第一个弹对的音对齐，估算后面每个音抢拍还是拖拍，只作参考，不计入对错。第一拍声音高一点、数字变绿。',
     foot:'记录和照片只存在这台设备上（localStorage）'
   },
   en: {
@@ -198,7 +198,7 @@ const I18N = {
     piece:'Pieces', piece_tip:'Pick a piece before you start: the selected piece shows only its own score photos, and a photo added while it is selected is filed under it.', piece_add:'＋ New piece', piece_del:'Delete piece', piece_name_ph:'Piece name, e.g. Twinkle Twinkle', piece_none_sel:'No piece selected (show all photos)', piece_empty:'No pieces yet. Name one above to create it.', piece_dup:'This child already has a piece with that name.', piece_del_q:'Delete this piece? Its photos stay and show again when no piece is selected.', piece_count:'This piece has {n} score photo(s).', piece_nophoto:'This piece has no score photos yet. Add one below and it will be filed under it.',
     demo:'Demo playback', demo_tip:'Type notes by hand and press play to hear a demo. Format: note name + octave, colon + beats, e.g. C4:1; R means rest, e.g. R:1; beats default to 1. No recognition is involved: the demo only plays the notes you typed. A proofread sequence can be saved to the current piece and loaded back later; a section plays only part of it, loop repeats it, and 0.5× slow speed suits playing along.', demo_ph:'e.g. C4:1 C4:1 G4:1 G4:1 A4:1 A4:1 G4:2', demo_example:'Fill example', demo_play:'▶ Play demo', demo_stop:'■ Stop', demo_speed:'Speed', demo_empty:'Type at least one note first.', demo_invalid:'Skipped invalid input: ', demo_playing:'Playing demo: ', demo_done:'Demo finished', demo_section:'Section', demo_from:'From note', demo_from_unit:'', demo_to:'to note', demo_to_unit:'', demo_all_hint:'blank = whole piece', demo_loop:'Loop', demo_save:'Save to current piece', demo_load:'Load piece demo', demo_nopiece:'Pick a piece in Pieces first.', demo_saved:'Saved to this piece.', demo_noload:'This piece has no saved demo notes yet.', demo_loaded:'Loaded this piece\u2019s demo notes.', demo_range_bad:'Bad section range: start from note 1, no further than the last note, and start no later than end.', demo_piece_none:'No piece selected: pick a piece in Pieces to save or load a demo.', demo_piece_has:'This piece has a saved demo ({n} notes); press Load piece demo to fill it in.', demo_piece_no:'This piece has no saved demo yet; type notes above and press Save to current piece.',
     follow:'Follow-along practice', follow_tip:'Practice note by note against this piece\u2019s saved demo notes: a correct note turns green and moves on, a wrong note turns red and stays for another try, and shows which note was expected, which note you played, and how many semitones too high or low, plus a one-line tip on how to fix it \u2014 tap “Hear correct note” to hear the right note \u2014 without interrupting the timer. With the metronome on, it also lines up on the first correct note and estimates rushing or dragging — for reference only, never counted right or wrong. Pick a piece in Pieces and save its demo notes first, then press Start practice \u2014 follow-along runs automatically while you play.', follow_start:'▶ Start follow-along', follow_stop:'■ Stop follow-along', follow_skip:'Skip this note', follow_listen:'🔊 Hear correct note', follow_expected:'Now play', follow_played:'You played', follow_progress:'Note {i} / {n}', follow_score:'Correct {ok} · Wrong {bad}', follow_done:'Follow-along complete!', follow_wrong:'Wrong note \u2014 try this one again.', follow_hint:'Expected {expected}, you played {played}, {n} {semi} too {dir} \u2014 try this note again.', follow_dir_high:'high', follow_dir_low:'low', follow_noseq:'This piece has no saved demo notes yet: type notes in Demo playback and press Save to current piece first.', follow_adv_high:'Too high: move {n} {semi} left and try this note again.', follow_adv_low:'Too low: move {n} {semi} right and try this note again.', follow_adv_same:'The pitch is right \u2014 check the score and play this note once more.', follow_adv_repeat:'Wrong on this note {n} times in a row: tap “Hear correct note” first, then play it slowly.', follow_adv_skipped:'Skipped {note}: hear the correct note first, then come back to it.', follow_rhythm_rush:'Rushing: about {ms} ms ahead of the beat — wait for the beat on the next note.', follow_rhythm_drag:'Dragging: about {ms} ms behind the beat — catch up with the beat on the next note.', follow_rhythm_ok:'Right on the beat — keep it up.',
-    report:'Practice report', report_time:'Effective practice time', report_piece:'Piece', report_score:'Correct {ok} · Wrong {bad} · Skipped {skip}', report_accuracy:'Accuracy {n}%', report_topwrong:'Most-missed notes', report_topwrong_none:'No repeated mistakes', report_focus:'Focus next time', report_focus_text:'Notes {from}–{to} ({n} mistakes in total)', report_topwrong_advice:'Most-missed notes {notes} — practise them on their own a few more times', report_advice_skipped:'Skipped {notes}: practise these notes on their own next time', report_rhythm:'Rhythm: rushed {rush} · dragged {drag} · on beat {ok}', report_nofollow:'No follow-along this time — only the practice time was recorded.', report_allok:'All correct! Next time try a faster tempo or a new piece.', report_empty:'No practice report yet — finish a session and a summary will appear here.', report_sep:'; ', report_mood:'Mood this time', report_mood_note:'Heuristic label, for reference only: a rough guess from tempo, loudness, pitch range and steadiness — not professional emotion recognition.', report_mood_insufficient:'Too few notes this time to guess a mood — play a few more notes before finishing.', mood_energetic:'Energetic', mood_bright:'Bright', mood_lively:'Lively', mood_gentle:'Gentle', mood_calm:'Calm', mood_reason_energetic:'Fast and loud', mood_reason_bright:'Wide pitch range, fairly quick', mood_reason_lively:'Fast but light', mood_reason_gentle:'Slow and soft', mood_reason_calm:'Steady tempo, small pitch range', metro:'Metronome', metro_start:'▶ Metronome', metro_stop:'■ Stop metronome', metro_tip:'The metronome is the beat reference for practice: with it on, follow-along lines up on the first correct note and estimates rushing or dragging for later notes — for reference only, never counted right or wrong. Beat 1 sounds higher and turns green.',
+    report:'Practice report', report_time:'Effective practice time', report_piece:'Piece', report_score:'Correct {ok} · Wrong {bad} · Skipped {skip}', report_accuracy:'Accuracy {n}%', report_topwrong:'Most-missed notes', report_topwrong_none:'No repeated mistakes', report_focus:'Focus next time', report_focus_text:'Notes {from}–{to} ({n} mistakes in total)', report_topwrong_advice:'Most-missed notes {notes} — practise them on their own a few more times', report_advice_skipped:'Skipped {notes}: practise these notes on their own next time', report_rhythm:'Rhythm: rushed {rush} · dragged {drag} · on beat {ok}', report_nofollow:'No follow-along this time — only the practice time was recorded.', report_allok:'All correct! Next time try a faster tempo or a new piece.', report_empty:'No practice report yet — finish a session and a summary will appear here.', report_sep:'; ', report_mood:'Mood this time', report_mood_note:'Heuristic label, for reference only: a rough guess from tempo, loudness, pitch range and steadiness — not professional emotion recognition.', report_mood_insufficient:'Too few notes this time to guess a mood — play a few more notes before finishing.', report_mood_compare:'Compared with last time', report_mood_compare_same:'Last time was also {prev} — same mood as last time.', report_mood_compare_stronger:'Last time was {prev} — more powerful than last time.', report_mood_compare_gentler:'Last time was {prev} — gentler than last time.', report_mood_compare_first:'First mood label for this piece — next session can be compared with this one.', mood_energetic:'Energetic', mood_bright:'Bright', mood_lively:'Lively', mood_gentle:'Gentle', mood_calm:'Calm', mood_reason_energetic:'Fast and loud', mood_reason_bright:'Wide pitch range, fairly quick', mood_reason_lively:'Fast but light', mood_reason_gentle:'Slow and soft', mood_reason_calm:'Steady tempo, small pitch range', metro:'Metronome', metro_start:'▶ Metronome', metro_stop:'■ Stop metronome', metro_tip:'The metronome is the beat reference for practice: with it on, follow-along lines up on the first correct note and estimates rushing or dragging for later notes — for reference only, never counted right or wrong. Beat 1 sounds higher and turns green.',
     foot:'Records and photos stay on this device only (localStorage)'
   }
 };
@@ -346,12 +346,12 @@ document.getElementById('clearBtn').onclick = ()=>{
 };
 
 // ---- 本地备份 v0.1.4：导出 JSON 文件 / 导入合并，不走任何账号 ----
-// 备份格式：{ app:'maodouqinyin', version:1, exportedAt, records:[{child,date,seconds,start,end}] }
+// 备份格式：{ app:'maodouqinyin', version:1, exportedAt, records:[{child,date,seconds,start,end,mood,piece}] }
 // 导入按 syncRecordId（child|date|start|seconds）去重：已有的跳过，只追加新记录，
 // 从不删除现有记录，所以误导错文件也不会丢数据。
 function buildBackup(hist){
   return { app: 'maodouqinyin', version: 1, exportedAt: new Date().toISOString(),
-    records: (hist || []).map(x => ({ child: x.child, date: x.date, seconds: x.seconds, start: x.start || null, end: x.end || null, mood: x.mood || null })) };
+    records: (hist || []).map(x => ({ child: x.child, date: x.date, seconds: x.seconds, start: x.start || null, end: x.end || null, mood: x.mood || null, piece: x.piece || null })) };
 }
 function validBackupRecord(x){
   return x && typeof x.child === 'string' && x.child.length > 0 &&
@@ -365,7 +365,7 @@ function parseBackup(text){
   if(!raw) throw new Error('bad format');
   const records = []; let invalid = 0;
   raw.forEach(x => {
-    if(validBackupRecord(x)) records.push({ child: x.child, date: x.date, seconds: x.seconds, start: x.start || null, end: x.end || null, mood: (typeof x.mood === 'string' && x.mood) ? x.mood : null });
+    if(validBackupRecord(x)) records.push({ child: x.child, date: x.date, seconds: x.seconds, start: x.start || null, end: x.end || null, mood: (typeof x.mood === 'string' && x.mood) ? x.mood : null, piece: (typeof x.piece === 'string' && x.piece) ? x.piece : null });
     else invalid++;
   });
   return { records: records, invalid: invalid };
@@ -1070,10 +1070,11 @@ document.getElementById('metroBpm').oninput = ()=>{
 // localStorage，刷新页面后还能看到上一次的小结。
 const REPORT_KEY = 'maodouqinyin_last_report_v1';
 const REPORT_SECTION_NOTES = 8;
-function buildPracticeReport(state, seconds, pieceName, mood){
+function buildPracticeReport(state, seconds, pieceName, mood, moodCompare){
   const totalSeconds = Math.max(0, Math.floor(seconds || 0));
   const report = { totalSeconds: totalSeconds, piece: pieceName || null, follow: null,
-    mood: (mood && mood.label) ? { label: mood.label, tempoNpm: Math.round(mood.tempoNpm || 0), pitchRange: mood.pitchRange || 0, continuity: Math.round((mood.continuity || 0) * 100) / 100 } : null };
+    mood: (mood && mood.label) ? { label: mood.label, tempoNpm: Math.round(mood.tempoNpm || 0), pitchRange: mood.pitchRange || 0, continuity: Math.round((mood.continuity || 0) * 100) / 100 } : null,
+    moodCompare: moodCompare || null };
   if(!state || !state.names || !state.names.length) return report;
   const correct = state.correct || 0, wrong = state.wrong || 0;
   const attempted = correct + wrong;
@@ -1145,6 +1146,14 @@ function renderReport(report){
   } else if('mood' in report){
     line(t('report_mood_insufficient'));
   }
+  // v0.1.18 情绪对照：只在本次有标签、且 moodCompare 在时显示；旧版报告
+  // 里没有 moodCompare 字段，什么都不显示。direction 为 first 表示这首
+  // 曲子之前还没有带标签的练琴。
+  if(report.mood && report.moodCompare){
+    const mc = report.moodCompare;
+    if(mc.direction === 'first') line('🔁 ' + t('report_mood_compare') + ': ' + t('report_mood_compare_first'));
+    else if(mc.prevLabel) line('🔁 ' + t('report_mood_compare') + ': ' + t('report_mood_compare_' + mc.direction).replace('{prev}', t('mood_' + mc.prevLabel)));
+  }
   line('💡 ' + reportAdviceText(report));
 }
 
@@ -1193,6 +1202,28 @@ function classifyMood(features){
   else if(features.pitchRange >= MOOD_RANGE_WIDE && features.tempoNpm >= MOOD_TEMPO_MID) label = 'bright';
   else if(features.avgRms < MOOD_RMS_SOFT && features.tempoNpm < MOOD_TEMPO_MID) label = 'gentle';
   return { label: label, tempoNpm: features.tempoNpm, avgRms: features.avgRms, pitchRange: features.pitchRange, continuity: features.continuity };
+}
+
+// ---- 情绪对照 v0.1.18：同一首曲子，这次的感觉和上次比 ----
+// 只比同一个孩子、同一首曲子，取历史里最近一次有标签的上一次练琴。
+// 标签按“力度”粗排，只为了说“更有力 / 更柔和”，不是情绪强弱的
+// 专业排序：柔和 < 平静 < 明亮 < 轻快 < 激昂。旧记录没有 piece 字段，
+// 找不到就当第一次有标签，下次再比。
+const MOOD_ENERGY = { gentle: 0, calm: 1, bright: 2, lively: 3, energetic: 4 };
+function findPrevMood(hist, childName, pieceName){
+  if(!hist || !childName || !pieceName) return null;
+  for(let i = hist.length - 1; i >= 0; i--){
+    const r = hist[i];
+    if(r && r.child === childName && r.piece === pieceName && typeof r.mood === 'string' && r.mood) return r;
+  }
+  return null;
+}
+function compareMoodLabel(prevLabel, curLabel){
+  if(!prevLabel || !curLabel) return null;
+  if(prevLabel === curLabel) return 'same';
+  const pe = MOOD_ENERGY[prevLabel], ce = MOOD_ENERGY[curLabel];
+  if(pe === undefined || ce === undefined) return null;
+  return ce > pe ? 'stronger' : 'gentler';
 }
 
 // ---- pitch detection (autocorrelation) ----
@@ -1360,11 +1391,16 @@ function endPractice(){
     // v0.1.17 情绪标签：按本次检测到的音算，标签随记录一起存，供下阶段做情绪对比
     const mood = classifyMood(moodFeatures(moodStats));
     const h = loadHist();
-    h.push({child: child, date: todayStr(), seconds: seconds, start: sessionStart ? sessionStart.toISOString() : null, end: new Date().toISOString(), mood: mood ? mood.label : null});
+    // v0.1.18 情绪对照：先在旧记录里找同一孩子、同一首曲子最近一次有
+    // 标签的练琴，再把本次记进去（顺序不能反，否则会和自己比）；记录
+    // 里新增 piece 字段，旧记录没有 piece 的比不上，当第一次处理
+    const piece = getCurrentPiece();
+    const prevMoodRec = findPrevMood(h, child, piece ? piece.name : null);
+    const moodCompare = (mood && piece) ? (prevMoodRec ? { prevLabel: prevMoodRec.mood, direction: compareMoodLabel(prevMoodRec.mood, mood.label) } : { prevLabel: null, direction: 'first' }) : null;
+    h.push({child: child, date: todayStr(), seconds: seconds, start: sessionStart ? sessionStart.toISOString() : null, end: new Date().toISOString(), mood: mood ? mood.label : null, piece: piece ? piece.name : null});
     saveHist(h);
     // v0.1.16 练琴报告：本次对照数据（只认本次练琴里实际喂过音的对照）
-    const piece = getCurrentPiece();
-    const report = buildPracticeReport(sessionHadFollow ? followState : null, seconds, piece ? piece.name : null, mood);
+    const report = buildPracticeReport(sessionHadFollow ? followState : null, seconds, piece ? piece.name : null, mood, moodCompare);
     saveReport(report); renderReport(report);
     if(SYNC_PROVIDER && sessionStart){
       const rec = { token: SYNC_TOKEN, child: child, date: todayStr(sessionStart),
